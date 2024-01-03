@@ -15,189 +15,180 @@ format:
 
 ## Contents
 
-1. VARs
+1. The TSF Problem
 
-2. Graphical VARs
+2. Vanilla Transformer
 
-3. Bayesian Graphical VARs
+3. TSF Transformers
 
 4. Conclusions
 
 
 
-# 1. VARs
+# 1. The TSF Problem
 
 
-## VAR Model
+##
 
-Vector autoregressive (**VAR**) models are popular choice for studying the joint
-dynamics of multiple time series.  
+Time series forecasting (TSF) is the task of predicting future values of a 
+given sequence based on previously observed values.  
 
-Consider $x_t$ as a $p$-dimensional vector of time-series at time $t$, a VAR 
-model is just a multivariate normal regression of $x_t$ on its own-lags
-$$ x_t = c + \sum_{i = 1}^{k} \Pi_i x_{t-i} + \epsilon_t \;\;\;\;\;\;\;\;\;\;\;\;\;\; (1)$$
+![](img/ts_for.png){fig-align="center" width="300"}
 
-where $\Pi_i$ are $p \times p$ coefficient matrices determining the dynamics of 
-the system, $c$ is a deterministic vector of $p$ components and 
-$\epsilon_t \sim N_p(0,\Sigma)$. 
 
+## 
 
-## Example of VAR(1)
+The TSF problem may be essentially identified by the following aspects:  
 
-A first order VAR model ($p = 1$) in two variables would be given by
-$$\begin{pmatrix} x_{1,t}\\x_{2,t} \end{pmatrix} = \begin{pmatrix} c_1\\c_2 \end{pmatrix} +  \begin{pmatrix} \pi_{11} & \pi_{12} \\ \pi_{21} & \pi_{22} \end{pmatrix} \begin{pmatrix} x_{1,t-1}\\x_{2,t-1} \end{pmatrix} + \begin{pmatrix} \epsilon_{1,t}\\\epsilon_{2,t} \end{pmatrix}$$  
+- **Prediction objective**: $\text{\underline{point forecasting}}$ vs probabilistic forecasting  
 
-If, for example $\pi_{12} \neq 0$, this means that the history of $x_2$ helps 
-explaining $x_1$.  
+- **Forecast horizon**: short-term vs $\text{\underline{long-term}}$ forecasting  
 
+- **Input-Output dimension**: $\text{\underline{univariate}}$ vs multivariate forecasting  
 
-## Pros & Cons
+- **Forecasting task**: $\text{\underline{single-step}}$ vs $\text{\underline{multi-step}}$ forecasting  
 
-- Main **advantage**: simplicity. VAR models require no special structure since the 
-outcome variables are regressed on their own lagged variables.  
-  
-- Main **disadvantage**: large number of regression coefficients, $K(Kp + m)$. The 
-significant number of regression parameters is proportional to the number of 
-lags, hence interpretation may be difficult and may not be good when fitted to 
-small data.   
-  
-Several tools have been proposed to aid in the interpretation of VAR models, 
-most notably Impulse Response Functions (IRF) and Granger Causality tests (GC).  
+The TSF problem is usually faced with statistical models (ARIMA, ETS) or 
+deep learning models (RNN, LSTM).  
 
 
-## Granger Causality
+##
 
-The general idea behind **Granger causality** is that a variable $X$ 
-Granger causes $Y$ if past values of $X$ can help explain $Y$.  
+The main challenges of the TSF problem are:  
 
-Of course, if Granger causality holds this does not guarantee that $X$ causes $Y$. 
-Nevertheless, if past values of $X$ have explanatory power for current values of 
-$Y$, it at least suggests that $X$ improves $Y$’s predictability.   
+- uncertainty increases as the forecast horizon increases  
 
-In the context of a VAR model, testing for Granger causality simply implies to 
-test the significance of the cross-coefficients ($\pi_{12}$ and $\pi_{21}$ in 
-the VAR(1) example).
+- difficulty in capturing multiple complex patterns over time  
 
+- difficulty in capturing long-term dependencies (critical for long-term forecasting)  
 
+- difficulty to handle long input sequences (critical for long-term forecasting)  
 
-# 2. Graphical VARs
 
-## Graphical Model
 
-Graphical models can be informally defined as statistical models represented in 
-the form of a graph, where the **nodes** (vertices) represents the variables and the
-presence of an **edge** between a pair of vertices means that the variables are in 
-some sense related.
+# 2. Vanilla Transformer
 
-Some advantages of a graphical model are:  
 
-- represents graphically the logical implication of the relationships  
-- suitable representation of the causal relationships using directed edges   
-- clarity of interpretation when analyzing complex interactions.  
+## desc
 
+The LSTM was seen to suffer from “short-term memory” over long sequences.
 
-## DAG Model
+Transformers retain direct connections to all previous timestamps, allowing information to propagate over much longer sequences. However, this entails a new challenge: the model will be directly connected to an exploding amount of input. In order to filter the important from the unimportant, Transformers use an algorithm called self-attention.
 
-In cross-sectional data, the graph usually represents the conditional independence 
-structure of the system and (by symmetry) the edges are undirected. In time-series 
-data, the time dimension of a process makes it more feasible to consider directed 
-flow.  
+a second challenge that needs to be addressed. The time series is not processed sequentially; thus, the Transformer will not inherently learn temporal dependencies. To combat this, the positional information for each token must be added to the input. In doing so, the self-attention block will have context of relative distance between a given time stamp and the current one, as an important indicator of relevance in self-attention.
 
-A **Directed Acyclic Graph** (DAG) is a collection $G = \{V,E\}$, where $V$ is the
-set of vertices and $E$ is the set of edges.
 
-<!-- ![](){fig-align="center" width="150"} -->
+## Vanilla Transformer
 
+![](img/vanilla_arch.png){fig-align="center" height="250"}
 
-## Connecting DAG and VAR
 
-Given the VAR model in (1), there is a one-to-one relationship between the 
-$\Pi_i$ matrices and DAGs, that is
-$$x_{a,t-i} \rightarrow x_{b,t} \iff \Pi_i(a,b) \neq 0$$  
+## aa
 
-Where $x_{a,t-i} \rightarrow x_{b,t}$ means that $x_{a,t-i}$ "causes" somehow $x_{b,t}$
+The residual connections are a commonly used technique for training deep neural networking systems and help train the model. It also helps it stabilize and learn.
 
-Hence, **directed edges** represent the **Granger causality** relations.
+Layer normalization is generally used in neural networks to process sequential data. It helps faster the convergence of training.
 
 
-## Characterization of Graphical VARs
+They have the powerful ability to learn long-range dependencies, which is crucial for accurate and true prediction.
 
-For a Gaussian VAR process $x_t$ with a Granger causality graph $G(V,E)$, the 
-following two conditions hold:    
 
-1. $(a,b) \notin E_1 \iff \Pi_i(a,b) = 0, \;\; \forall i = 1, ..., k$
-2. $(a,b) \notin E_2 \iff \Sigma^{-1}(a,b) = 0$  
 
-where $E_1$ and $E_2$ are the sets of directed and undirected edges, and 
-$\Pi_i(a,b)$ is the $(a,b)$th element of $\Pi_i$.  
+They are difficult to train and demand time, consistency, and hardwork.
 
-A Gaussian VAR process satisfying these conditions is said to belong to a **graphical Granger causal VAR model**, $VAR(G, k)$.
+These models are often large and complex, which makes them tough to optimize.
 
+Transformer models need data to learn the correlation between the input and output sequences.
 
+Sometimes or due to continuity prediction, predicting some data on time can be slow. It happens because transformer models have to process the entire input sequence before generating predictions for the future.
 
-# 3. Bayesian Graphical VARs
+Last, transformer models sometimes struggle to capture long-term dependencies in a given time series of data. This happens because transformer models are designed to focus on low patterns rather than global trends.
 
-## The $VAR(G,k)$ Problem
 
-The unknown quantities of a $VAR(G,k)$ process are:  
+## vanilla Transformers can be used for the TSF
 
-- the underlying Granger causality graph $G$  
-- the number of lags $k$  
-- the modelling parameters $\Pi_1, ..., \Pi_k$ and $\Sigma$ (from now $\theta$)
+## Problems with vanilla Transformers
 
-Inference on $G$ and $k$ is essentially a model determination problem in a very 
-large space and the authors proposed a solution within a Bayesian framework.  
 
 
-## Posterior of $VAR(G,k)$
+# 3. TSF Transformers
 
-Following a **Bayesian approach**, the authors proposed to model jointly Granger 
-causality and lag length. The **joint posterior** distribution of $(G,k)$ 
-conditional on the observed time series $X$ can be written as  
 
-$$\pi(G,k | X) = \frac{m(G,k|X) \; p(G,k)}{\sum_{G \in \mathcal{G}} \sum_{k = 0}^{K} m(G,k|X) \; p(G,k)}$$
+## Classification
 
-where $p(G,k)$ is the joint prior of $G$ and $k$, and $m(G,k|X)$ is the marginal
-likelihood of the observed time series $X$.  
+cambiarla con una più sensata con le modifiche su positional, architettura e moduli
 
+![](img/ts_transf.png){fig-align="center" width="400" height="150"}
 
-## Prior of $G$ and $k$
 
-The **joint prior** of $G$ and $k$ is over a discrete set and can be chosen in many
-ways. For instance, if there is no reason for favoring any particular graph in 
-$\mathcal{G}$ a priori, the following prior can be used  
+## Informer
 
-$$p(G,k) = \frac{p(k)}{|\mathcal{G}|}$$  
+aa
 
-where $p(k)$ is some discrete distribution over the integers $k = 0, 1, ..., K$.  
 
+## Informer - Architecture
 
-## Marginal Likelihood of $X$
+![](img/informer_arch.png){fig-align="center"}
 
-The **marginal likelihood** of the observed time series $X$ is given by
-$$m(G,k|X) = \int L(X|\theta,G,k) \; p(\theta|G,k) \; d\theta$$
 
-where $L(X|\theta,G,k)$ is the likelihood function under model $(G,k)$ 
-with parameters $\theta$, and $p(\theta|G,k)$ is the prior distribution of $\theta$.  
+## Informer - Causal Convolution Layers
 
-For the $VAR(G,k)$ family of models, a common choice for $p(\theta|G,k)$ is the 
-inverse Wishart distribution, which, however, is an **improper prior** and it is 
-not directly usable for deriving the joint posterior of $G$ and $k$. 
+![](img/informer_arch2.png){fig-align="center"}
 
 
-## The Fractional Bayes Approach
+## Informer - ProbSparse Attention
 
-A solution to this problem is to use a **Fractional Bayes approach**:  
-first, a small part of the sample is sacrificed in updating the improper prior 
-to a proper posterior, then this posterior is used as a new prior for the 
-remaining observations.  
+![](img/informer_attention.png){fig-align="center"}
 
-Because of the **Fractional Marginal Likelihood** does not factorizes under a 
-$VAR(G,k)$ model, the authors derived an **approximated** version that produced 
-favorable results in model inference.  
 
-Finally, the estimate for $\theta$ is obtained iterating between two conditional 
-estimators until convergence (given in Lutkepohl 1993 and Lauritzen 1996).  
+## Autoformer
+
+Autoformer builds upon the traditional method of decomposing time series into seasonality and trend-cycle components. This is achieved through the incorporation of a Decomposition Layer, which enhances the model's ability to capture these components accurately. Moreover, Autoformer introduces an innovative auto-correlation mechanism that replaces the standard self-attention used in the vanilla transformer. 
+
+the two key contributions of Autoformer: the Decomposition Layer and the Attention (Autocorrelation) Mechanism.
+
+
+## Autoformer - Architecture
+
+![](img/autoformer_arch.png){fig-align="center"}
+
+
+## Autoformer - Decomposition Layer
+
+Autoformer incorporates a decomposition block as an inner operation of the model, as presented in the Autoformer's architecture above. As can be seen, the encoder and decoder use a decomposition block to aggregate the trend-cyclical part and extract the seasonal part from the series progressively
+
+For an input series X with length L, the decomposition layer returns Xtrend and Xseasonal
+
+
+## Autoformer - Decomposition Layer
+
+aa
+
+
+
+## Autoformer - Attention Mechanism
+
+In addition to the decomposition layer, Autoformer employs a novel auto-correlation mechanism which replaces the self-attention seamlessly. In the vanilla Time Series Transformer, attention weights are computed in the time domain and point-wise aggregated. On the other hand, as can be seen in the figure above, Autoformer computes them in the frequency domain (using fast fourier transform) and aggregates them by time delay.
+
+
+## Autoformer - Attention Mechanism
+
+Using autocorrelation, Autoformer extracts frequency-based dependencies from the queries and keys, instead of the standard dot-product between them. You can think about it as a replacement for the 
+QK^T term in the self-attention.
+
+In practice, autocorrelation of the queries and keys for all lags is calculated at once by FFT. By doing so, the autocorrelation mechanism achieves O(LlogL) time complexity (where L is the input time length), similar to Informer's ProbSparse attention.
+
+Next, we will see how to aggregate our attn_weights with the values by time delay, process which is termed as Time Delay Aggregation.
+
+
+## Autoformer - Autocorrelation Attention 
+
+![](img/autoformer_attention.png){fig-align="center"}
+
+
+## Autoformer - Time Delay Aggregation
+
+![](img/autoformer_attention2.png){fig-align="center"}
 
 
 
@@ -205,19 +196,20 @@ estimators until convergence (given in Lutkepohl 1993 and Lauritzen 1996).
 
 ## Conclusions
 
-- DAG approach can be used to study the Granger causality relationships in
-VAR models
-- Since the $VAR(G,k)$ usually has a very large number of parameters, a 
-fractional Bayes approach can be used to approximate the joint posterior of the 
-process  
-- Empirically valid results
-
-<!-- ![](){fig-align="center" width="100"} -->
+- aa
 
 
 ## Bibliografy
 
-*Corander, J. & Villani, M. (2006), ‘A Bayesian Approach to Modelling Graphical Vector Autoregressions’, Journal of Time Series Analysis 27(1), 141–156.*
+*Ailing Z., et al., 2023, 'Are Transformers Effective for Time Series Forecasting?', AAAI*
+
+*Haixu W., et al., 2021, 'Autoformer: Decomposition transformers with auto-correlation for long-term series forecasting', NeurIPS*
+
+*Haoyi Z., et al., 2021, 'Informer: Beyond efficient transformer for long sequence time-series forecasting', AAAI*
+
+*Lara-Benitez P., et al., 2021, 'Evaluation of the Transformer Architecture for Univariate Time Series Forecasting', Advances in Artificial Intelligence, CAEPIA*
+
+*Qingsong W., et al., 2022, 'Transformers in Time Series: A Survey', AAAI*
 
 
 ##
@@ -225,3 +217,26 @@ process
 \center Thank you! \center
 
 \
+
+
+
+# Appendix
+
+## Autocorrelation
+
+In theory, given a time lag $k$, autocorrelation for a single discrete variable 
+$Y$ is used to measure the "relationship" (pearson correlation) between the 
+variable's current value at time $t$ to its past value at time $t - k$.
+$$Autocorrelation(k) = Corr(Y_t, Y_{t-k})$$
+
+![](img/ts_autocorr.png){fig-align="center" width="250"}
+
+
+## Time Series Decomposition
+
+In time series analysis, decomposition is a method of breaking down a time 
+series into three systematic components: trend-cycle, seasonal variation, and 
+random fluctuations.  
+
+![](img/ts_decomp.png){fig-align="center" height="180"}
+
