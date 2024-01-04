@@ -138,11 +138,13 @@ recurrent layers, etc.)
 ## Classification
 
 Transformers are **very appealing for long-term TSF** due to their ability to 
-learn long-range dependencies.  
+learn long-range dependencies. 
 
-cambiarla con una più sensata con le modifiche su positional, architettura e moduli
+Many solutions have been proposed to adapt Transformers to TSF, mainly in the 
+direction to improve the encoding, adopt more efficient attention and expand 
+the architecture.  
 
-![](img/ts_transf.png){fig-align="center" width="400" height="150"}
+![](img/ts_transf.png){fig-align="center" width="400" height="250"}
 
 
 ## Informer
@@ -167,9 +169,16 @@ aa
 
 ## Autoformer
 
-Autoformer builds upon the traditional method of decomposing time series into seasonality and trend-cycle components. This is achieved through the incorporation of a Decomposition Layer, which enhances the model's ability to capture these components accurately. Moreover, Autoformer introduces an innovative auto-correlation mechanism that replaces the standard self-attention used in the vanilla transformer. 
+**Autoformer** builds upon two traditional time series analysis methods:  
 
-the two key contributions of Autoformer: the Decomposition Layer and the Attention (Autocorrelation) Mechanism.
+- **Decomposition Layer**, which allows to decompose the time series into 
+seasonality and trend-cycle components, enhancing the model's ability to 
+capture these components accurately  
+
+- **Attention (Autocorrelation) Mechanism**, which replaces the standard 
+self-attention used in the vanilla transformer with an autocorrelation 
+mechanism, allowing to capture the temporal dependencies in the frequency
+domain  
 
 
 ## Autoformer - Architecture
@@ -179,40 +188,31 @@ the two key contributions of Autoformer: the Decomposition Layer and the Attenti
 
 ## Autoformer - Decomposition Layer
 
-Autoformer incorporates a decomposition block as an inner operation of the model, as presented in the Autoformer's architecture above. As can be seen, the encoder and decoder use a decomposition block to aggregate the trend-cyclical part and extract the seasonal part from the series progressively
+Autoformer incorporates **decomposition blocks** as an inner operation of the model.  
 
-For an input series X with length L, the decomposition layer returns Xtrend and Xseasonal
+Encoder and decoder use decomposition blocks to extract and aggregate the 
+trend-cyclical and seasonal parts from the series progressively.
 
-
-## Autoformer - Decomposition Layer
-
-aa
-
+For an input series $X_t$ with length $L$, the decomposition layer returns 
+$X_{trend}$ and $X_{seasonal}$, both of length $L$.  
 
 
 ## Autoformer - Attention Mechanism
 
-In addition to the decomposition layer, Autoformer employs a novel auto-correlation mechanism which replaces the self-attention seamlessly. In the vanilla Time Series Transformer, attention weights are computed in the time domain and point-wise aggregated. On the other hand, as can be seen in the figure above, Autoformer computes them in the frequency domain (using fast fourier transform) and aggregates them by time delay.
-
-
-## Autoformer - Attention Mechanism
-
-Using autocorrelation, Autoformer extracts frequency-based dependencies from the queries and keys, instead of the standard dot-product between them. You can think about it as a replacement for the 
-QK^T term in the self-attention.
-
-In practice, autocorrelation of the queries and keys for all lags is calculated at once by FFT. By doing so, the autocorrelation mechanism achieves O(LlogL) time complexity (where L is the input time length), similar to Informer's ProbSparse attention.
-
-Next, we will see how to aggregate our attn_weights with the values by time delay, process which is termed as Time Delay Aggregation.
-
-
-## Autoformer - Autocorrelation Attention 
+Autoformer uses **autocorrelation within the self-attention** mechanism, extracting
+frequency-based dependencies from queries and keys (instead of the standard 
+dot-product).  
 
 ![](img/autoformer_attention.png){fig-align="center"}
 
+In practice, autocorrelation of the queries and keys for all lags is calculated 
+at once by Fast Fourier Transform, so to achieve $O(L logL)$ time complexity 
+(similar to Informer's ProbSparse attention).
 
-## Autoformer - Time Delay Aggregation
 
-![](img/autoformer_attention2.png){fig-align="center"}
+<!-- ## Autoformer - Time Delay Aggregation -->
+
+<!-- ![](img/autoformer_attention2.png){fig-align="center"} -->
 
 
 
