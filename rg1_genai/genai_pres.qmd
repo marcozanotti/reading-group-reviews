@@ -56,58 +56,79 @@ deep learning models (RNN, LSTM).
 
 The main challenges of the TSF problem are:  
 
-- uncertainty increases as the forecast horizon increases  
+- **uncertainty** increases as the forecast horizon increases  
 
-- difficulty in capturing multiple complex patterns over time  
+- difficulty in capturing **multiple complex patterns** over time  
 
-- difficulty in capturing long-term dependencies (critical for long-term forecasting)  
+- difficulty in capturing **long-term dependencies** (critical for long-term forecasting)  
 
-- difficulty to handle long input sequences (critical for long-term forecasting)  
+- difficulty to handle **long input sequences**    
 
 
 
 # 2. Vanilla Transformer
 
+##
 
-## desc
-
-The LSTM was seen to suffer from “short-term memory” over long sequences.
-
-Transformers retain direct connections to all previous timestamps, allowing information to propagate over much longer sequences. However, this entails a new challenge: the model will be directly connected to an exploding amount of input. In order to filter the important from the unimportant, Transformers use an algorithm called self-attention.
-
-a second challenge that needs to be addressed. The time series is not processed sequentially; thus, the Transformer will not inherently learn temporal dependencies. To combat this, the positional information for each token must be added to the input. In doing so, the self-attention block will have context of relative distance between a given time stamp and the current one, as an important indicator of relevance in self-attention.
-
-
-## Vanilla Transformer
-
-![](img/vanilla_arch.png){fig-align="center" height="250"}
-
-
-## aa
-
-The residual connections are a commonly used technique for training deep neural networking systems and help train the model. It also helps it stabilize and learn.
-
-Layer normalization is generally used in neural networks to process sequential data. It helps faster the convergence of training.
+:::: {.columns}
+::: {.column width="60%"}
+- Based on Encoder-Decoder architecture  
+- Uses self-attention mechanism to access any part of the sequence history  
+- Positional encoding allows to account for element positions  
+- Residual connections and layer normalization help to stabilize the learning 
+process  
+- Each encoder and decoder layer is composed of a self-attention layer and a 
+feed-forward layer  
+:::
+::: {.column width="40%"}
+![](img/vanilla_arch.png){fig-align="center" height="300"}
+:::
+::::
 
 
-They have the powerful ability to learn long-range dependencies, which is crucial for accurate and true prediction.
+## Can vanilla Transformers be used for TSF?
+
+The TSF problem can be seen as a sequence learning problem such as machine 
+translation. 
+    
+Main ingredients allowing to use vanilla Transformers for TSF:  
+
+- **Multi-head Self-attention** mechanism allows to access any part of the 
+sequence history, capturing both short-term and long-term dependencies 
+(but it is invariant to the order of elements in a sequence)  
+
+- **Positional encoding** allows to account for the sequence ordering  
+
+- **Masked self-attention** allows to avoid information leakage from future  
 
 
+## Can vanilla Transformers be used for TSF?
 
-They are difficult to train and demand time, consistency, and hardwork.
+Just few changes are needed to adapt Transformers to TSF:  
 
-These models are often large and complex, which makes them tough to optimize.
+- **Remove the final activation** function (softmax) from the output layer and set 
+the dimension of the linear layer equal to the forecasting horizon  
 
-Transformer models need data to learn the correlation between the input and output sequences.
+- **Adapt the structure** to the desired forecasting task (single-step or multi-step)  
 
-Sometimes or due to continuity prediction, predicting some data on time can be slow. It happens because transformer models have to process the entire input sequence before generating predictions for the future.
+![](img/vanilla_adjust.png){fig-align="center"}
 
-Last, transformer models sometimes struggle to capture long-term dependencies in a given time series of data. This happens because transformer models are designed to focus on low patterns rather than global trends.
-
-
-## vanilla Transformers can be used for the TSF
 
 ## Problems with vanilla Transformers
+
+- **Locally agnostic**: the attention mechanism matches queries and keys without 
+considering their local context being prone to temporal anomalies  
+
+- **Positional encoding**: only the order in which two elements occur is taken 
+into account, but their temporal distance is not  
+
+- **Computational complexity**: given a sequence of length $L$, the time and 
+memory burden is $O(L^2)$, making it difficult to learn patterns in long time 
+series  
+
+- **Simple Architecture**: the architecture does not include any component
+of typical importance in TSF (e.g. autocorrelation, decomposition, 
+recurrent layers, etc.)
 
 
 
@@ -115,6 +136,9 @@ Last, transformer models sometimes struggle to capture long-term dependencies in
 
 
 ## Classification
+
+Transformers are **very appealing for long-term TSF** due to their ability to 
+learn long-range dependencies.  
 
 cambiarla con una più sensata con le modifiche su positional, architettura e moduli
 
