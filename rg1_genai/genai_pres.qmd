@@ -191,23 +191,27 @@ domain
 Autoformer incorporates **decomposition blocks** as an inner operation of the model.  
 
 Encoder and decoder use decomposition blocks to extract and aggregate the 
-trend-cyclical and seasonal parts from the series progressively.
+trend-cyclical and seasonal components from the series progressively, so to make
+raw data easier to predict.
 
 For an input series $X_t$ with length $L$, the decomposition layer returns 
-$X_{trend}$ and $X_{seasonal}$, both of length $L$.  
+$X_{trend}$ and $X_{seasonal}$, both of length $L$. In practice, $X_{trend}$ 
+is extracted using some form of moving-average and $X_{seasonal}$ is then 
+obtained by difference.  
 
 
 ## Autoformer - Attention Mechanism
 
-Autoformer uses **autocorrelation within the self-attention** mechanism, extracting
-frequency-based dependencies from queries and keys (instead of the standard 
-dot-product).  
+Autoformer uses **autocorrelation within the self-attention** layer, extracting
+frequency-based dependencies from $(Q,K)$. The autocorrelation block measures the 
+**time-delay similarity** and aggregates the top $n$ similar sub-series to 
+reduce complexity.
 
 ![](img/autoformer_attention.png){fig-align="center"}
 
 In practice, autocorrelation of the queries and keys for all lags is calculated 
 at once by Fast Fourier Transform, so to achieve $O(L logL)$ time complexity 
-(similar to Informer's ProbSparse attention).
+(similar to Informer).
 
 
 <!-- ## Autoformer - Time Delay Aggregation -->
@@ -221,6 +225,10 @@ at once by Fast Fourier Transform, so to achieve $O(L logL)$ time complexity
 ## Conclusions
 
 - aa
+
+- While using various type of positional encoding can preserve some ordering 
+information, it is still inevitable to have temporal information loss after
+applying self-attention.   
 
 
 ## Bibliografy
