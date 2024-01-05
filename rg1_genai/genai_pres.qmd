@@ -27,7 +27,6 @@ format:
 
 # 1. The TSF Problem
 
-
 ##
 
 Time series forecasting (TSF) is the task of predicting future values of a 
@@ -116,8 +115,8 @@ the dimension of the linear layer equal to the forecasting horizon
 
 ## Problems with vanilla Transformers
 
-- **Locally agnostic**: the attention mechanism matches queries and keys without 
-considering their local context being prone to temporal anomalies  
+<!-- - **Locally agnostic**: the attention mechanism matches queries and keys without  -->
+<!-- considering their local context being prone to temporal anomalies   -->
 
 - **Positional encoding**: only the order in which two elements occur is taken 
 into account, but their temporal distance is not  
@@ -134,14 +133,13 @@ recurrent layers, etc.)
 
 # 3. TSF Transformers
 
-
-## Classification
+## 
 
 Transformers are **very appealing for long-term TSF** due to their ability to 
 learn long-range dependencies. 
 
 Many solutions have been proposed to adapt Transformers to TSF, mainly in the 
-direction to improve the encoding, adopt more efficient attention and expand 
+direction to <!-- improve the encoding, --> adopt more efficient attention and expand
 the architecture.  
 
 ![](img/ts_transf.png){fig-align="center" width="400" height="250"}
@@ -149,22 +147,49 @@ the architecture.
 
 ## Informer
 
-aa
+**Informer** employs two major improvements:  
+
+- **ProbSparse Attention Mechanism**, which replaces the standard 
+self-attention used in the vanilla transformer with a sparse attention so to 
+achieve $O(LlogL)$ complexity  
+
+- **Distilling Module**, which reduces the input size between encoder layers
+into its half slice, removing redundancy and reducing the computational burden  
 
 
 ## Informer - Architecture
 
-![](img/informer_arch.png){fig-align="center"}
-
-
-## Informer - Causal Convolution Layers
-
-![](img/informer_arch2.png){fig-align="center"}
+![](img/informer_arch.png){fig-align="center" height="250"}
 
 
 ## Informer - ProbSparse Attention
 
+The main idea of **ProbSparse** is that just a small subset of queries ("active")
+effectively contribute to the attention mechanism. The ProbSparse attention 
+selects the "active" queries, and creates a reduced query matrix, which is then 
+used to calculate the attention weights, reaching $O(LlogL)$ complexity.  
+
 ![](img/informer_attention.png){fig-align="center"}
+
+In practice, the KL divergence is used to define a sparsity measure, 
+since active queries distribution diverges from uniform, and a random sample of
+$K$ is used to obtain a sparse matrix of keys.    
+
+
+## Informer - Convolution Layers
+
+Because of the ProbSparse self-attention, the encoder’s feature map has some 
+redundancy that can be removed. The **distilling** operation is used to reduce 
+the input size between encoder layers.  
+
+In practice, Informer's distilling operation just adds **1D convolution layers**, 
+along the time dimension, with max pooling between each of the encoder layers.  
+$$X_{n+1} = MaxPool( \, ELU( \,Conv1d(Xn) \,) \,)$$
+
+This reduces by half the size of the data between the feature space, improving
+both memory and computational efficiency.  
+
+<!-- ![](img/informer_arch2.png){fig-align="center"} -->
 
 
 ## Autoformer
@@ -175,10 +200,10 @@ aa
 seasonality and trend-cycle components, enhancing the model's ability to 
 capture these components accurately  
 
-- **Attention (Autocorrelation) Mechanism**, which replaces the standard 
+- **Autocorrelation Attention Mechanism**, which replaces the standard 
 self-attention used in the vanilla transformer with an autocorrelation 
 mechanism, allowing to capture the temporal dependencies in the frequency
-domain  
+domain and achieving $O(LlogL)$ complexity   
 
 
 ## Autoformer - Architecture
@@ -200,7 +225,7 @@ is extracted using some form of moving-average and $X_{seasonal}$ is then
 obtained by difference.  
 
 
-## Autoformer - Attention Mechanism
+## Autoformer - Autocorrelation Attention
 
 Autoformer uses **autocorrelation within the self-attention** layer, extracting
 frequency-based dependencies from $(Q,K)$. The autocorrelation block measures the 
@@ -210,13 +235,8 @@ reduce complexity.
 ![](img/autoformer_attention.png){fig-align="center"}
 
 In practice, autocorrelation of the queries and keys for all lags is calculated 
-at once by Fast Fourier Transform, so to achieve $O(L logL)$ time complexity 
+at once by Fast Fourier Transform, so to achieve $O(LlogL)$ time complexity 
 (similar to Informer).
-
-
-<!-- ## Autoformer - Time Delay Aggregation -->
-
-<!-- ![](img/autoformer_attention2.png){fig-align="center"} -->
 
 
 
@@ -224,11 +244,17 @@ at once by Fast Fourier Transform, so to achieve $O(L logL)$ time complexity
 
 ## Conclusions
 
-- aa
+- Transformers are very appealing for TSF due to their ability to learn long-range
+dependencies  
 
-- While using various type of positional encoding can preserve some ordering 
-information, it is still inevitable to have temporal information loss after
-applying self-attention.   
+- Many solutions have been proposed to adapt Transformers to TSF, mainly in the
+direction to adopt more efficient attention and expand the architecture  
+
+- Informer and Autoformer are two of the most successful solutions, and they
+both achieve $O(LlogL)$ complexity  
+
+- Empirical results show that Transformer models are able to reach SOTA 
+performance in TSF, and are among the best methods for long-term forecasting  
 
 
 ## Bibliografy
@@ -256,19 +282,51 @@ applying self-attention.
 
 ## Autocorrelation
 
-In theory, given a time lag $k$, autocorrelation for a single discrete variable 
-$Y$ is used to measure the "relationship" (pearson correlation) between the 
-variable's current value at time $t$ to its past value at time $t - k$.
-$$Autocorrelation(k) = Corr(Y_t, Y_{t-k})$$
+In theory, given a time lag $\tau$, **autocorrelation** for a single discrete variable 
+$Y$ is used to measure the "relationship" between the variable at time $t$ to 
+its past value at time $t - \tau$.  
+$$Autocorrelation(\tau) = \mathcal{R}(\tau) = Corr(Y_t, Y_{t-\tau})$$
 
 ![](img/ts_autocorr.png){fig-align="center" width="250"}
 
 
 ## Time Series Decomposition
 
-In time series analysis, decomposition is a method of breaking down a time 
-series into three systematic components: trend-cycle, seasonal variation, and 
-random fluctuations.  
+In time series analysis, **decomposition** is a method of breaking down a time 
+series into three systematic components: **trend-cycle**, 
+**seasonal variations**, and **random fluctuations**.  
 
 ![](img/ts_decomp.png){fig-align="center" height="180"}
+
+
+## Time2Vec Embedding
+
+**Time2Vec** is a method of encoding time information into a vector and has three 
+important properties: 
+
+1. **Periodicity**, captures periodic and non-periodic patterns
+2. **Invariant to time rescaling**
+3. **Model-agnostic**, can be combined with many models  
+
+For a given scalar time $τ$, $t2v$ of $τ$ is defined as:  
+
+$$t2v(\tau)[i] = \begin{cases} \omega_i \tau + \phi_i, & \mbox{if } i = 0 \\ \mathcal{F}(\omega_i \tau + \phi_i), & \mbox{if }1 \leq i \leq k \end{cases}$$
+
+where $\mathcal{F}$ is a periodic activation function, and $\omega_i$ and $\phi_i$ are 
+learnable parameters.  
+
+
+## Informer - ProbSparse Attention
+
+$$Attention(Q,K,V) = softmax(\frac{Q_{reduced}K^T}{\sqrt{d_k}})V$$
+$$M(q_i ,K) = \max_j \frac{q_iK_j^T}{\sqrt{d_k}} - \frac{1}{L_k} \sum_{j=1}^{L_k} \frac{q_iK_j^T}{\sqrt{d_k}}$$
+
+![](img/informer_attention2.png){fig-align="center" height="130"}
+
+## Autoformer - Autocorrelation Attention
+
+$$\tau_1,..., \tau_k = arg \;Top-k \;(\mathcal{R}_{Q,K}(\tau))$$
+$$Attention(Q,K,V) = \sum_{i=1}^{k} Roll(V,\tau_i) \times softmax(\mathcal{R}_{Q,K}(\tau_i))$$
+
+![](img/autoformer_attention2.png){fig-align="center"}
 
