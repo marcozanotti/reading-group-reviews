@@ -76,7 +76,7 @@ The main challenges of the TSF problem are:
 - Positional encoding allows to account for element positions  
 - Residual connections and layer normalization help to stabilize the learning 
 process  
-- Each encoder and decoder layer is composed of a self-attention layer and a 
+- Each encoder and decoder layer is composed of an attention layer and a 
 feed-forward layer  
 :::
 ::: {.column width="40%"}
@@ -139,8 +139,8 @@ Transformers are **very appealing for long-term TSF** due to their ability to
 learn long-range dependencies. 
 
 Many solutions have been proposed to adapt Transformers to TSF, mainly in the 
-direction to <!-- improve the encoding, --> adopt more efficient attention and expand
-the architecture.  
+direction to <!-- improve the encoding, --> adopt **more efficient attention** 
+and **expand the architecture**.  
 
 ![](img/ts_transf.png){fig-align="center" width="400" height="250"}
 
