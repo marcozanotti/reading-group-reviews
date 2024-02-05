@@ -63,18 +63,8 @@ extremely relevant for the model's performance
 - **computational cost**: the search for the best model architecture and 
 hyperparameters is resource expensive  
 
-
-##
-
-For this reason, the authors proposed a new open source framework for **Automated 
-Deep Learning for TSF** that:  
-
-- uses **NAS** to search over a variety of state-of-the-art TSF architectures  
-
-- adopts **BO** to optimize the hyperparameters of the models (with a CASH approach)  
-
-- explores **multi-fidelity optimization** to reduce the computational cost of the 
-search process.  
+To deal with these issues, the authors proposed a new framework for **Automated 
+Deep Learning for TSF**.  
 
 
 
@@ -132,11 +122,21 @@ space is conditional and high-dimensional)
 
 ##
 
-The application of NAS to the TSF problem is a relatively new research field.
+Recent years have witnessed great efficiency improvements in AutoDL systems but
+little attention has been paid to general automatic framework for TSF.  
+
+The authors proposed a new framework for **Automated Deep Learning for TSF** that:  
+
+- uses **NAS** to search over a variety of state-of-the-art TSF architectures  
+
+- adopts **BO** to optimize the hyperparameters of the models (with a **CASH** 
+approach)  
+
+- explores **multi-fidelity optimization** to reduce the computational cost of the 
+search process  
 
 
-
-## The Forecasting Pipeline
+## Automatic Forecasting Pipeline
 
 The proposed framework is based on a **forecasting pipeline** that:  
 
@@ -152,18 +152,17 @@ used to evaluate the final predictions on the test set
 ![](img/autodl1.png){fig-align="center" width="300"}
 
 
-## The Search Space
-
-SOTA architectures for TSF can be decomposed into three parts:  
+## Search Space
 
 :::: {.columns}
 ::: {.column width="60%"}
-The **encoder** processes the input sequence (past target values) and embeds 
-them into a latent space.   
-The **decoder** processes the latent embedding and 
-future features.  
-The **forecasting head** is the output layer and takes the 
-decoder's output to generate a sequence of scalar values.  
+SOTA architectures for TSF can be decomposed into two parts:  
+
+- the **encoder** processes the input sequence (past target values) and embeds 
+them into a latent space  
+
+- the **decoder** processes the latent embedding and future features and generates 
+a sequence of scalar values through the output layer  
 :::
 ::: {.column width="40%"}
 ![](img/autodl2.png){fig-align="center"}
@@ -171,7 +170,7 @@ decoder's output to generate a sequence of scalar values.
 ::::
 
 
-## The Search Space
+## Search Space
 
 Based on encoder-decoder architectures, the final search space contains many
 TSF algorithms, such as NBEATS, DeepAR, TFT.  
@@ -185,12 +184,21 @@ TSF algorithms, such as NBEATS, DeepAR, TFT.
 
 ## Hyperparameter Optimization
 
-The hyperparameters of the models are optimized via a **CASH approach**.  
+The loss function is optimized on the validation set via **BO**.  
+Since training deep neural networks requires lots of computational resources,
+**multi-fidelity optimization** is used to reduce the computational cost of the 
+search process:  
 
-The loss function (usually MAE or MASE) is optimized on the validation set via
-**BO**, using **Random Forest** as surrogate model.  
+- it allows to train the model with different **budget types** (number of epochs, 
+time series length and number of series)
 
-**Multi-fidelity optimization** is used to reduce the computational cost of the
+- starting with the lowest budget setup and gradually assigning higher budgets to 
+well-performing configurations  
+
+- it prevents the optimizer from investing too many resources on the poorly 
+performing configurations and allows to **focus on the most promising** ones  
+
+- it may introduce **bias** in the performance estimation  
 
 
 
@@ -201,11 +209,11 @@ The loss function (usually MAE or MASE) is optimized on the validation set via
 - The authors proposed a framework for AutoDL in the context of TSF to 
 efficiently search for the best model architectures and hyperparameters  
 
-- The search space is based on the most recent SOTA TSF algorithms formulated 
+- The search space is based on state-of-the-art TSF algorithms formulated 
 as an encoder-decoder architecture  
 
 - Empirical results show that the proposed framework is able to outperform the 
-SOTA methods on a variety of datasets  
+state-of-the-art methods on a variety of datasets  
 
 - The optimal choice of budget type is dataset specific and the most important 
 hyperparameters are related to the optimizer of the neural network and its 
