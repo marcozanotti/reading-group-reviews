@@ -198,8 +198,6 @@ well-performing configurations
 - it prevents the optimizer from investing too many resources on the poorly 
 performing configurations and allows to **focus on the most promising** ones  
 
-- it may introduce **bias** in the performance estimation  
-
 
 
 # 4. Conclusions
