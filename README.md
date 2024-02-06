@@ -22,4 +22,16 @@ The presentations for the five Reading Group courses.
 
 ## RG 5 - Spatio-Temporal Methods
 
-[Presentation](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_pres.pdf)
+### Part 1
+
+[Review](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_review_1.pdf)  
+[Presentation](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_pres_1.pdf)  
+[R
+Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/simulation/simulation_1.R)
+
+### Part 2
+
+[Review](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_review_2.pdf)  
+[Presentation](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_pres_2.pdf)  
+[R
+Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/simulation/simulation_2.R)
