@@ -1,0 +1,63 @@
+---
+title: "Assessing the Impact of Outliers on Least Square Variogram Model"
+format:
+  jasa-pdf:
+    keep-tex: true  
+    journal:
+      blinded: false
+  jasa-html: default
+linestretch: 1.5
+date: 2024-02-28
+author:
+  - name: Caterina Daidone, Marco Zanotti
+    affiliations:
+      - name: University of Milano Bicocca
+abstract: |
+  After a brief summary, this review points out the main advantages 
+  and the main drawbacks of the research.
+keywords:
+  - spatial statistics
+  - outliers
+  - variogram
+---
+
+<!-- Samples from a Gaussian random process can be simulated using the function grf  -->
+<!-- of the R library geoR or using the library Fields (search the web to explore  -->
+<!-- other R-functions).  -->
+<!-- Alternately you can implement your own code to simulate the data using the  -->
+<!-- Cholesky decomposition (chol and rnorm functions in the base R package).  -->
+<!-- In any case, briefly describe the method that you used to simulate your data  -->
+<!-- in your paper. -->
+
+<!-- Assess the impact of outliers on least squares estimates of the variogram model  -->
+<!-- parameters using a short simulation study. Compare the LS estimates based on  -->
+<!-- the empirical variogram with those obtained using the robust variograms proposed  -->
+<!-- by Cressie and Hawkins (1980) (see Cressie’s book page 69 and page 75 equations  -->
+<!-- 2.4.12 and 2.4.13). -->
+
+
+## Introduction
+
+an introductory section describing the main task tackled in the paper (along with relevant bibliographic references) 
+
+
+
+## Methods
+
+a methodological section covering methods 
+
+
+
+## Simulation
+
+and simulation designs
+
+
+
+## Results
+    
+
+
+## Conclusion
+
+ 

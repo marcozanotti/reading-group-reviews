@@ -1,0 +1,61 @@
+---
+title: "Assessing the Impact of Outliers on Least Square Variogram Model"
+author: "Caterina Daidone, Marco Zanotti"
+institute: "University Milano-Bicocca"
+format: 
+ beamer:
+  theme: Dresden
+  colortheme: default
+  navigation: horizontal
+  header-includes: |
+       \titlegraphic{\includegraphics[width=0.2\paperwidth]{img/logo-giallo.png}}
+       \setbeamertemplate{page number in head/foot}[totalframenumber]
+---
+
+
+## Contents
+
+1. Introduction
+
+2. Variogram Model
+
+3. Simulation
+
+4. Conclusions
+
+
+
+# 1. Introduction
+
+## 
+
+
+
+# 2. Variogram Model
+
+## 
+
+
+
+# 3. Simulation
+
+## 
+
+
+
+# 4. Conclusions
+
+## 
+
+
+## Bibliografy
+
+*Cressie N. 1993. Statistics for Spatial Data. John Wiley and Sons Inc., New York*
+
+
+##
+
+\center Thank you! \center
+
+\
+
