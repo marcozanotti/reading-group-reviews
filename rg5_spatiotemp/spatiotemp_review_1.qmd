@@ -36,6 +36,12 @@ keywords:
 <!-- 2.4.12 and 2.4.13). -->
 
 
+<!-- # Cressie, N. and Hawkins, D. M. (1980) Robust Estimation of the Variogram: I. Mathematical Geology, 12, 115–125. -->
+<!-- # Dowd, P. A. (1984) The variogram and kriging: Robust and resistant estimators. In Geostatistics for Natural Resources Characterization, Verly, G., David, M., Journel, A. and Marechal, A. (Eds.) Dordrecht: D. Reidel Publishing Company, Part I, 1, 91–106. -->
+<!-- # Genton, M. (1998) Highly Robust Variogram Estimation. Mathematical Geology, 30, 213–220. -->
+
+
+
 ## Introduction
 
 an introductory section describing the main task tackled in the paper (along with relevant bibliographic references) 
@@ -46,6 +52,21 @@ an introductory section describing the main task tackled in the paper (along wit
 
 a methodological section covering methods 
 
+<!-- # https://www.rdocumentation.org/packages/sortinghat/versions/0.1/topics/simdata_contaminated -->
+
+<!-- # The empirical semivariogram is created by averaging the squared differences  -->
+<!-- # between pairs of points that are approximately the same distance apart.   -->
+<!-- # Even a few outliers can heavily influence this average (particularly because  -->
+<!-- # you're squaring the difference).  -->
+<!-- #  -->
+<!-- # Outliers are almost always problematic for kriging, but they're particularly  -->
+<!-- # bad when the outliers are scattered randomly throughout the study region  -->
+<!-- # (rather than being clustered together).  This is because randomly scattered  -->
+<!-- # outliers will affect the empirical semivariances at small distances (because  -->
+<!-- # they might be right next to low values), but if the outliers are clustered,  -->
+<!-- # the squared difference between two outliers might still be small, allowing for  -->
+<!-- # accurate semivariogram estimation at small distances (which is the most  -->
+<!-- # important part of the semivariogram because closer neighbors get the highest weights). -->
 
 
 ## Simulation
