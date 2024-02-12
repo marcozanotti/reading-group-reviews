@@ -27,7 +27,7 @@ The presentations for the five Reading Group courses.
 [Review](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_review_1.pdf)  
 [Presentation](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_pres_1.pdf)  
 [R
-Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/simulation/simulation_1.R)
+Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/R/simulation_1.R)
 
 ### Part 2
 
