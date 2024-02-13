@@ -17,9 +17,9 @@ format:
 
 1. Introduction
 
-2. Variogram Model
+2. Methods
 
-3. Simulation
+3. Simulation & Results
 
 4. Conclusions
 
@@ -31,15 +31,36 @@ format:
 
 
 
-# 2. Variogram Model
+# 2. Methods
 
 ## 
 
 
 
-# 3. Simulation
+# 3. Simulation & Results
 
 ## 
+
+![](img/grf.png){fig-align="center" width="200"}
+
+
+##
+
+![](img/cgrf.png){fig-align="center" width="400"}
+
+
+## 
+
+![](img/variog_grf_ols.png){fig-align="center" width="300"}
+
+##
+
+![](img/variog_cgrf_ols.png){fig-align="center" width="400"}
+
+
+## 
+
+![](img/variog_est_ols.png){fig-align="center" width="400"}
 
 
 

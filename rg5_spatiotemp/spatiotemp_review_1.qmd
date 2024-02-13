@@ -21,21 +21,6 @@ keywords:
   - variogram
 ---
 
-<!-- Samples from a Gaussian random process can be simulated using the function grf  -->
-<!-- of the R library geoR or using the library Fields (search the web to explore  -->
-<!-- other R-functions).  -->
-<!-- Alternately you can implement your own code to simulate the data using the  -->
-<!-- Cholesky decomposition (chol and rnorm functions in the base R package).  -->
-<!-- In any case, briefly describe the method that you used to simulate your data  -->
-<!-- in your paper. -->
-
-<!-- Assess the impact of outliers on least squares estimates of the variogram model  -->
-<!-- parameters using a short simulation study. Compare the LS estimates based on  -->
-<!-- the empirical variogram with those obtained using the robust variograms proposed  -->
-<!-- by Cressie and Hawkins (1980) (see Cressie’s book page 69 and page 75 equations  -->
-<!-- 2.4.12 and 2.4.13). -->
-
-
 <!-- # Cressie, N. and Hawkins, D. M. (1980) Robust Estimation of the Variogram: I. Mathematical Geology, 12, 115–125. -->
 <!-- # Dowd, P. A. (1984) The variogram and kriging: Robust and resistant estimators. In Geostatistics for Natural Resources Characterization, Verly, G., David, M., Journel, A. and Marechal, A. (Eds.) Dordrecht: D. Reidel Publishing Company, Part I, 1, 91–106. -->
 <!-- # Genton, M. (1998) Highly Robust Variogram Estimation. Mathematical Geology, 30, 213–220. -->
@@ -73,10 +58,24 @@ a methodological section covering methods
 
 and simulation designs
 
+![](img/grf.png){fig-align="center" width="300"}
+
+
+
+![](img/cgrf.png){fig-align="center" width="400"}
+
 
 
 ## Results
     
+![](img/variog_grf_ols.png){fig-align="center" width="300"}
+
+
+![](img/variog_cgrf_ols.png){fig-align="center" width="400"}
+
+
+![](img/variog_est_ols.png){fig-align="center" width="500"}
+
 
 
 ## Conclusion
