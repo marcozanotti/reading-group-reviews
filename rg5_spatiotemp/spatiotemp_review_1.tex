@@ -165,8 +165,14 @@ University of Milano Bicocca\\
 \bigskip
 \bigskip
 \begin{abstract}
-After a brief summary, this review points out the main advantages and
-the main drawbacks of the research.
+It is a matter of common experience that ore values often do not follow
+the normal (or lognormal) distributions assumed for them, but, instead,
+follow some other heavier-tailed distribution. In study we reviewed the
+two most popular methods for the variogram estimation, that is the
+classical and the robust variograms, and a simulation study is performed
+to assess the impact of outliers on the estimates. It is shown that the
+use of the robust variogram yields stable estimates when the scale of
+the contamination increases.
 \end{abstract}
 
 \noindent%
@@ -188,30 +194,112 @@ a methodological section covering methods
 
 \section{Simulation}\label{simulation}
 
-and simulation designs
+In order to assess the impact of outliers on the variogram estimation
+based on the classical and the robust approaches, we performed a
+simulation study. Simulating Gaussian Random Fields (GRF) and
+Contaminated Gaussian Random Fields (CGRF) involves different approaches
+due to the added complexity of contamination. GRFs solely need a mean
+and covariance function. This function dictates the smoothness and
+spatial dependence of the field. Common methods for generating GRF
+include the spectral method (using Fast Fourier Transforms) and the
+Cholesky decomposition. Simulating CGRF, instead, introduces an
+additional layer of complexity. Here, the underlying GRF represents the
+``true'' signal, while the contamination acts as an independent noise
+process. Common approaches involve generating the GRF first, then adding
+a separate noise field with its own properties (e.g., mean, variance,
+spatial dependence). Alternatively, one can directly simulate the CGRF
+by incorporating the contamination into the covariance function itself.
+
+We followed \citet{cre:1980}, where the departure from Gaussianity is
+obtained simulating a GRF with probability \(1 - \epsilon\) and a CGRF
+with probability \(\epsilon\).\\
+\[
+\begin{cases}
+  N(0, \sigma^2), \;\;\;\;\;\;\; with \; probability \; 1-\epsilon \\
+  N(0, k^2 \sigma^2), \;\;\;\; with \; probability \; \epsilon
+\end{cases}
+\]
+
+where \(\epsilon\) is the probability of contamination and \(k\)
+measures the scale of the contamination. To practically simulate the
+underlying GRF, we used the grf function of the geoR package in R.
+
+We simulated 1000 spatial points on a regular grid, with a mean of 0 and
+a covariance function with parameters \(\sigma^2 = 1\) and
+\(\phi = 0.25\). The base scenario, that is no contamination, is
+simulated with \(\epsilon = 0\).
 
 \begin{center}
 \includegraphics[width=3.125in,height=\textheight]{img/grf.png}
 \end{center}
 
+Then we simulated six different scenarios based on the combinations of
+\(epsilon = (0.05, 0.1, 0.2)\) and \(kappa = (5, 10)\), to assess the
+impact of contamination on the variogram estimation under different
+circumstances.
+
 \begin{center}
-\includegraphics[width=4.16667in,height=\textheight]{img/cgrf.png}
+\includegraphics[width=5.20833in,height=\textheight]{img/cgrf.png}
 \end{center}
+
+Nugget and different levels of spatial correlation are not considered in
+this simulation study but they can be easily added to the simulation
+process.
 
 \section{Results}\label{results}
 
-\begin{center}
-\includegraphics[width=3.125in,height=\textheight]{img/variog_grf_ols.png}
-\end{center}
+The variogram estimation is performed using the classical (in black) and
+the robust (in red) approaches. The two methods are compared on the
+different simulated scenarios to assess their robustness to
+contamination. Moreover, given that outliers are almost always
+problematic for kriging, we also estimated a variogram model using the
+OLS estimator to see how the outliers affect the model estimates. The
+estimation process is performed using the functions variog and variofit
+of the geoR package in R.
+
+The base scenario, that is no contamination, shows that the two methods
+provide almost identical results.
 
 \begin{center}
-\includegraphics[width=4.16667in,height=\textheight]{img/variog_cgrf_ols.png}
+\includegraphics[width=5.20833in,height=\textheight]{img/variog_grf_ols.png}
 \end{center}
+
+In the presence of contamination, instead, the two methods provide
+different results. If we analyze the results in terms of the outliers'
+scale (\(kappa\)), we can observe two different behaviours. For small
+outliers' scale, that is \(kappa = 5\), the two methods provide similar
+estimations independently of the number of outliers (\(\epsilon\)).
+However, for large outliers' scale, that is \(kappa = 10\), the
+estimates are more different the higher the number of outliers.
+
+\begin{center}
+\includegraphics[width=6.25in,height=\textheight]{img/variog_cgrf_ols.png}
+\end{center}
+
+As expected, from theoretical considerations, the robust variogram
+estimates are generally smaller than the classical ones. Indeed, the
+classical approach is heavily influenced primarily by the scale of the
+outliers, while the robust approach is less sensitive to the
+contamination. Moreover, the scale of the contamination also strongly
+affects the estimation of the nugget (which should be always 0), but the
+robust approach is much less sensitive to this issue.
 
 \begin{center}
 \includegraphics[width=5.20833in,height=\textheight]{img/variog_est_ols.png}
 \end{center}
 
+\section{Conclusion}\label{conclusion}
+
+The theoretical considerations suggest that the robust variogram is less
+sensitive to the presence of outliers. For this reason it should be
+preferred when the data are contaminated. The simulation study confirms
+this results and shows that the robust variogram yields stable estimates
+when the scale of the contamination increases. However, if the scale of
+the contamination is small, then the two methods provide similar
+results.
+
+
+  \bibliography{bibliography.bib}
 
 
 \end{document}
