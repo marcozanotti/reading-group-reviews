@@ -41,32 +41,66 @@ format:
 
 ## 
 
+Following Cressie (1980), the departure from Gaussianity is obtained simulating 
+a **GRF** with probability $1 - \epsilon$ and a **CGRF** with probability $\epsilon$.  
+$$
+\begin{cases}
+  N(0, \sigma^2), \;\;\;\;\;\;\; with \; probability \; 1-\epsilon \\
+  N(0, k^2 \sigma^2), \;\;\;\; with \; probability \; \epsilon
+\end{cases}
+$$
+
+where $\epsilon$ is the probability of contamination and $k$ measures the scale 
+of the contamination.  
+
+To practically simulate the underlying GRF, the **grf** function of the **geoR** 
+package in R is used.  
+
+
+## 
+
+The **base scenario** represents no contamination and is simulated with $\epsilon = 0$.  
+
 ![](img/grf.png){fig-align="center" width="200"}
 
 
 ##
 
-![](img/cgrf.png){fig-align="center" width="400"}
+**Six different contaminated scenarios** based on the combinations of 
+$epsilon = (0.05, 0.1, 0.2)$ and $kappa = (5, 10)$ are simulated.  
+
+![](img/cgrf.png){fig-align="center" width="325"}
 
 
 ## 
+
+In the **base scenario** the two methods provide almost **identical results**.  
 
 ![](img/variog_grf_ols.png){fig-align="center" width="300"}
 
 ##
 
+In the presence of **contamination** the two methods provide **different results**.  
+
 ![](img/variog_cgrf_ols.png){fig-align="center" width="400"}
-
-
-## 
-
-![](img/variog_est_ols.png){fig-align="center" width="400"}
 
 
 
 # 4. Conclusions
 
 ## 
+
+The theoretical considerations suggest that the robust variogram is less 
+sensitive to the presence of outliers. For this reason it should be preferred 
+when the data are contaminated.  
+
+The simulation study confirms this results and shows that:  
+
+- the **robust variogram** yields more **stable estimates** when the **scale** 
+of the contamination **increases**  
+
+- if the **scale** of the contamination is **small**, the two methods provide 
+**similar results**.   
 
 
 ## Bibliografy
