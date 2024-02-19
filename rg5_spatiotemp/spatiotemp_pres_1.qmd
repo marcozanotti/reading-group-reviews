@@ -125,8 +125,14 @@ of the contamination **increases**
 
 ## Bibliografy
 
-*Cressie N. 1993. Statistics for Spatial Data. John Wiley and Sons Inc., New York*
+*Cressie, N. & Hawkins, D. M. 1980, Robust estimation of the variogram: I, Journal of
+the international Association for Mathematical Geology 12, 115-125*
 
+*Hawkins, D. M. & Cressie, N. 1984, Robust kriging—a proposal’, Journal of the 
+International Association for Mathematical Geology 16, 3-18*
+
+*Matheron, G. 1962, Precision of exploring a stratified formation by boreholes with rigid
+spacing - application to a bauxite deposit, Elsevier, pp. 407-422*
 
 ##
 
