@@ -27,13 +27,33 @@ format:
 
 # 1. Introduction
 
-## 
+## Geostatistics
+
+
+## Gaussian Random Field
 
 
 
 # 2. Methods
 
-## 
+##
+
+The **classical variogram** estimator based on Matheron (1962) is defined as:
+$$2\hat{\gamma}=\frac{1}{|N(h)|}\sum_{N(h)}\left(Z(s_i)-Z(s_j)\right)^2, \hspace{2mm} h\in \mathbb{R}^d$$  
+
+where $N(h)=\{(s_i,s_j):s_i-s_j=h; i,j=1,...,n\}$ and $|N(h)|$ is the number of 
+distinct pairs in $N(h)$.  
+
+##
+
+The **robust variogram** estimator based on Cressie (1980) is defined as:
+$$2\bar{\gamma}(h)\equiv\left\{\frac{1}{|N(h)|}\sum_{N(h}|Z(s_i)-Z(s_j)|^{1/2}\right\}^4/(0.457+0.494/|N(h)|)$$  
+
+and
+$$2\tilde{\gamma}(h)=[med\{|Z(s_i)-Z(s_j)|^{1/2}:(s_i,s_j) \in N(h)\}]^4/B(h)$$  
+
+where $med\{\cdot\}$ is the median of the sequence and $B(h)$ corrects for bias 
+(asymptotically 0.457).
 
 
 
@@ -41,12 +61,12 @@ format:
 
 ## 
 
-Following Cressie (1980), the departure from Gaussianity is obtained simulating 
+Following Hawkins (1984), the departure from Gaussianity is obtained simulating 
 a **GRF** with probability $1 - \epsilon$ and a **CGRF** with probability $\epsilon$.  
 $$
 \begin{cases}
-  N(0, \sigma^2), \;\;\;\;\;\;\; with \; probability \; 1-\epsilon \\
-  N(0, k^2 \sigma^2), \;\;\;\; with \; probability \; \epsilon
+  Gau(0, c_o), \;\;\;\;\;\;\; with \; probability \; 1-\epsilon \\
+  Gau(0, k^2 c_0), \;\;\;\; with \; probability \; \epsilon
 \end{cases}
 $$
 
