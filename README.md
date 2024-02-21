@@ -33,4 +33,4 @@ Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/R/simu
 
 [Presentation](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/spatiotemp_pres_2.pdf)  
 [R
-Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/simulation/analysis_2.R)
+Code](https://marcozanotti.github.io/reading-group-reviews/rg5_spatiotemp/R/analysis_2.R)
