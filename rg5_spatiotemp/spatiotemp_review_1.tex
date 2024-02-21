@@ -204,15 +204,14 @@ where \(\mu(x)\) is the trend or drift (large scale component) of the
 process, \(S(x)\) (small-scale term) is 0-mean spatial stochastic
 process with a given correlation structure, \(W(x)\) is white noise,
 namely 0-mean independent random variables with \(Var(W(x))=\tau^2\), D
-is the space index. Only the small-scale variability will be described
-in this short paper, assuming no trend and white noise. Moreover,
-observed variables often contain outliers that have unusually large or
-small values when compared with others and could affect the results of
-analysis in geostatistical data. Some methodology results about Gaussian
-random process and variogram estimation are presented. Additionally
-through a simulation study, a comparison between classical and robust
-methods is shown to detect some changes of the estimates of the
-variogram parameters, using least squares estimation.
+is the space index. Moreover, observed variables often contain outliers
+that have unusually large or small values when compared with others and
+could affect the results of analysis in geostatistical data. Some
+methodology results about Gaussian random process and variogram
+estimation are presented. Additionally through a simulation study, a
+comparison between classical and robust methods is shown to detect some
+changes of the estimates of the variogram parameters, using least
+squares estimation.
 
 \section{Methods}\label{methods}
 
@@ -223,7 +222,7 @@ family of random variables defined on a common probabilistic space
 \((\Omega,F,P)\). The word ``spatial'' is deployed when the trajectory
 of the process is a deterministic function with 2-D or 3-D domain. In
 this framework, the index is denoted with s. Three main ingredients are
-very important in RF: i) a parametric (or index space) D; ii) a
+very important in RF: i) a parametric (or index) space D; ii) a
 probability space and iii) a state space, defined by the set of all
 possible values that each random variable at location s take on.
 
@@ -279,9 +278,9 @@ are considered:
   \(0\) when \(h=0\) (\(\theta=(c_0, c_s, a_s)^{\prime}\),
   \(c_0 \geq0\), \(c_s \geq 0\), \(a_s \geq 0\))
 \item
-  exponential: \(c_0+c_e\{1-exp(-||h||/a_{e})\}\), when \(h=0\), \(0\)
-  otherwise (\(\theta=(c_0,c_e,a_e)^{\prime}\), \(c_0 \geq 0\),
-  \(c_e \geq 0\), \(c_e \geq 0\)).
+  exponential: \(c_0+c_e\{1-exp(-||h||/a_{e})\}\), when \(h\neq0\),
+  \(0\) otherwise (\(\theta=(c_0,c_e,a_e)^{\prime}\), \(c_0 \geq 0\),
+  \(c_e \geq 0\), \(a_e \geq 0\)).
 \end{itemize}
 
 The classical variogram estimator (\citet{mat:1962}), based on method of
@@ -305,12 +304,12 @@ and
 
 where \(med\{\cdot\}\) is the median of the sequence and \(B(h)\)
 corrects for bias (asymptotically 0.457). \((Z(s_i)-Z(s_j))^2\) is a
-chi-squared random variable for Gaussian data. The power transformation
-that makes this most Gaussian-like is the square root of the absolute
-difference (the fourth root), namely \(|(Z(s_i)-Z(s_j))|^{1/2}\). It is
-important to remark that the sums between classical and robust are not
-independent and when the dependence is higher, they are less efficient
-in estimating the variogram.
+chi-squared random variable with one degree of freedom for Gaussian
+data. The power transformation that makes this most Gaussian-like is the
+square root of the absolute difference (the fourth root), namely
+\(|(Z(s_i)-Z(s_j))|^{1/2}\). It is important to remark that the sums
+between classical and robust are not independent and when the dependence
+is higher, they are less efficient in estimating the variogram.
 
 Robustness is a based-model concept and, following \citet{haw:1984} the
 model is given by\\
@@ -325,7 +324,7 @@ Gaussian and the amount of contamination is given by a constant
 part increases. A comparison plot of experimental variogram and fitted
 theoretical variogram is an invaluable diagnostic tool to measure the
 sum of squares of the differences between a generic variogram estimator
-(\(2\gamma^{*}(he)\)) and a model (\(2\gamma(he,;\theta)\))
+(\(2\gamma^{*}(he)\)) and a model (\(2\gamma(he;\theta)\))
 (\citet{haw:1984}).
 
 The method of ordinary least squares specifies that \(\theta\) is
@@ -336,28 +335,25 @@ for some direction \(e\), where \(K\) are the number of lags.
 
 \section{Simulation}\label{simulation}
 
-In order to assess the impact of outliers on the variogram estimation
-based on the classical and the robust approaches, a simulation study is
-permformed. Simulating Gaussian Random Fields (GRF) and Contaminated
-Gaussian Random Fields (CGRF) involves different approaches due to the
-added complexity of contamination. GRFs solely need a mean and
-covariance function. This function dictates the smoothness and spatial
-dependence of the field. Common methods for generating GRF include the
-spectral method (using Fast Fourier Transforms) and the Cholesky
-decomposition. Simulating CGRF, instead, introduces an additional layer
-of complexity. In this case, the underlying GRF represents the ``true''
-signal, while the contamination acts as an independent noise process.
-Common approaches involve generating the GRF first, then adding a
-separate noise field with its own properties (e.g., mean, variance,
-spatial dependence). Alternatively, one can directly simulate the CGRF
-by incorporating the contamination into the covariance function itself.
+Simulating Gaussian Random Fields (GRF) and Contaminated Gaussian Random
+Fields (CGRF) involves different approaches due to the added complexity
+of contamination. GRFs solely need a mean and covariance function. This
+function dictates the smoothness and spatial dependence of the field.
+Common methods for generating GRF include the spectral method (using
+Fast Fourier Transforms) and the Cholesky decomposition. Simulating
+CGRF, instead, introduces an additional layer of complexity. In this
+case, the underlying GRF represents the ``true'' signal, while the
+contamination acts as an independent noise process. Common approaches
+involve generating the GRF first, then adding a separate noise field
+with its own properties (e.g., mean, variance, spatial dependence).
+Alternatively, one can directly simulate the CGRF by incorporating the
+contamination into the covariance function itself.
 
 Following \citet{haw:1984}, the departure from Gaussianity is obtained
 simulating the model \[Z(s)=\mu+W(s)+E(s)\]
 
-where \(W(s)\) is a zero-mean intrinsically stationary Gaussian process
-whose variogram is continuous at origin and \(E(s)\) is is a GRF with
-probability \(1 - \epsilon\) and a CGRF with probability \(\epsilon\).
+\(E(s)\) is a GRF with probability \(1 - \epsilon\) and a CGRF with
+probability \(\epsilon\).
 
 \[
 E(s) \sim

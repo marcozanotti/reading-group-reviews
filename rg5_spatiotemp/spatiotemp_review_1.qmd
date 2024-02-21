@@ -48,15 +48,13 @@ $$Y(x)=\mu(x)+S(x)+W(x), \hspace{2mm} x\in D$$
 where $\mu(x)$ is the trend or drift (large scale component) of the process, 
 $S(x)$ (small-scale term) is 0-mean spatial stochastic process with a given 
 correlation structure, $W(x)$ is white noise, namely 0-mean independent random 
-variables with $Var(W(x))=\tau^2$, D is the space index. Only the small-scale 
-variability will be described in this short paper, assuming no trend and white 
-noise. Moreover, observed variables often contain outliers that have unusually 
-large or small values when compared with others and could affect the results of 
-analysis in geostatistical data. Some methodology results about Gaussian random 
-process and variogram estimation are presented. Additionally through a 
-simulation study, a comparison between classical and robust methods is shown to 
-detect some changes of the estimates of the variogram parameters, using least 
-squares estimation.  
+variables with $Var(W(x))=\tau^2$, D is the space index. Moreover, observed 
+variables often contain outliers that have unusually large or small values when 
+compared with others and could affect the results of analysis in geostatistical 
+data. Some methodology results about Gaussian random process and variogram 
+estimation are presented. Additionally through a simulation study, a comparison 
+between classical and robust methods is shown to detect some changes of the 
+estimates of the variogram parameters, using least squares estimation.  
 
 
 
@@ -68,7 +66,7 @@ of random variables defined on a common probabilistic space $(\Omega,F,P)$.
 The word "spatial" is deployed when the trajectory of the process is a 
 deterministic function with 2-D or 3-D domain. In this framework, the index is 
 denoted with s. Three main ingredients are very important in RF: i) a parametric 
-(or index space) D; ii) a probability space and iii) a state space, defined by 
+(or index) space D; ii) a probability space and iii) a state space, defined by 
 the set of all possible values that each random variable at location s take on.  
 
 A stochastic process is Gaussian when for any set $x_1,..., x_k$ in D and any 
@@ -110,8 +108,8 @@ considered:
 - spherical: $\gamma(h;\theta)=c_0+c_s\{(3/2)(||h||/a_{s})-1/2(||h||/a_{s})^3$ 
   when $0\leq ||h|| \leq a_s$, $c_0+c_s$ when $||h|| \geq a_s$, $0$ when $h=0$ 
   ($\theta=(c_0, c_s, a_s)^{\prime}$, $c_0 \geq0$, $c_s \geq 0$, $a_s \geq 0$)
-- exponential: $c_0+c_e\{1-exp(-||h||/a_{e})\}$, when $h=0$, $0$ otherwise 
-  ($\theta=(c_0,c_e,a_e)^{\prime}$, $c_0 \geq 0$, $c_e \geq 0$, $c_e \geq 0$).  
+- exponential: $c_0+c_e\{1-exp(-||h||/a_{e})\}$, when $h\neq0$, $0$ otherwise 
+  ($\theta=(c_0,c_e,a_e)^{\prime}$, $c_0 \geq 0$, $c_e \geq 0$, $a_e \geq 0$).  
 
 The classical variogram estimator (@mat:1962), based on method of 
 moments, is given by  
@@ -133,11 +131,12 @@ $$2\tilde{\gamma}(h)=[med\{|Z(s_i)-Z(s_j)|^{1/2}:(s_i,s_j) \in N(h)\}]^4/B(h)$$
 
 where $med\{\cdot\}$ is the median of the sequence and $B(h)$ corrects for bias 
 (asymptotically 0.457). $(Z(s_i)-Z(s_j))^2$ is a chi-squared random variable 
-for Gaussian data. The power transformation that makes this most Gaussian-like 
-is the square root of the absolute difference (the fourth root), namely 
-$|(Z(s_i)-Z(s_j))|^{1/2}$. It is important to remark that the sums between 
-classical and robust are not independent and when the dependence is higher, 
-they are less efficient in estimating the variogram.  
+with one degree of freedom for Gaussian data. The power transformation that 
+makes this most Gaussian-like is the square root of the absolute difference 
+(the fourth root), namely $|(Z(s_i)-Z(s_j))|^{1/2}$. 
+It is important to remark that the sums between classical and robust are not 
+independent and when the dependence is higher, they are less efficient in 
+estimating the variogram.  
 
 Robustness is a based-model concept and, following @haw:1984 the model is given by  
 $$Z(s)=\mu+W(s)+E(s)$$  
@@ -151,7 +150,7 @@ uncontaminated part increases.
 A comparison plot of experimental variogram and fitted theoretical variogram is 
 an invaluable diagnostic tool to measure the sum of squares of the differences 
 between a generic variogram estimator ($2\gamma^{*}(he)$) and a model 
-($2\gamma(he,;\theta)$) (@haw:1984).  
+($2\gamma(he;\theta)$) (@haw:1984).  
 
 The method of ordinary least squares specifies that $\theta$ is estimated by 
 minimizing 
@@ -170,8 +169,6 @@ for some direction $e$, where $K$ are the number of lags.
 
 ## Simulation
 
-In order to assess the impact of outliers on the variogram estimation based on 
-the classical and the robust approaches, a simulation study is permformed. 
 Simulating Gaussian Random Fields (GRF) and Contaminated Gaussian Random Fields 
 (CGRF) involves different approaches due to the added complexity of contamination. 
 GRFs solely need a mean and covariance function. This function dictates the 
@@ -189,9 +186,7 @@ Following @haw:1984, the departure from Gaussianity is obtained simulating the
 model 
 $$Z(s)=\mu+W(s)+E(s)$$  
 
-where $W(s)$ is a zero-mean intrinsically stationary Gaussian process whose 
-variogram is continuous at origin and $E(s)$ is is a GRF with probability 
-$1 - \epsilon$ and a CGRF with probability $\epsilon$.  
+$E(s)$ is a GRF with probability $1 - \epsilon$ and a CGRF with probability $\epsilon$.  
 
 $$
 E(s) \sim
