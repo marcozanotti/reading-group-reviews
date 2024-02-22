@@ -255,14 +255,13 @@ data_month |>
 
 
 # * Space Plots -----------------------------------------------------------
-
 data_month |> 
 	st_as_sf(coords = c("long", "lat"), crs = 4326) |> 
 	ggplot() + 
 	geom_sf(mapping = aes(col = pm10)) + 
 	scale_colour_gradient(low = "green", high = "red") +
 	facet_wrap(~ date) + 
-	labs(title = "PM10 - by space and month", x = "", y = "")
+	labs(title = NULL, x = "", y = "")
 
 data_month |> 
 	st_as_sf(coords = c("long", "lat"), crs = 4326) |> 
