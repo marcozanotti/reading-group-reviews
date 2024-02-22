@@ -1,6 +1,6 @@
 ---
-title: "Transformers for Time Series Forecasting"
-author: "Marco Zanotti"
+title: "Spatio-Temporal Analysis of PM10 in Nordrhein-Westfalen"
+author: "Caterina Daidone, Tamara Vasjlev, Marco Zanotti"
 institute: "University Milano-Bicocca"
 format: 
  beamer:
@@ -15,32 +15,65 @@ format:
 
 ## Contents
 
-1. VARs
+1. Data
 
-2. Graphical VARs
+2. Explorative Analysis
 
-3. Bayesian Graphical VARs
+3. Modelling
 
 4. Conclusions
 
 
 
-# 1. VARs
-
-
-## 
-
-
-
-# 2. Graphical VARs
+# 1. Data
 
 ## 
 
+![](img/spat2_1.png){fig-align="center" width="400"}
 
 
-# 3. Bayesian Graphical VARs
+
+# 2. Explorative Analysis
 
 ## 
+
+![](img/spat2_3.png){fig-align="center" width="400"}
+
+## 
+
+![](img/spat2_4.png){fig-align="center" width="400"}
+
+## 
+
+![](img/spat2_6.png){fig-align="center" width="400"}
+
+## 
+
+![](img/spat2_7.png){fig-align="center" width="400"}
+
+## 
+
+![](img/spat2_8.png){fig-align="center" width="400"}
+
+## 
+
+![](img/spat2_10.png){fig-align="center" width="400"}
+
+## 
+
+![](img/spat2_9.png){fig-align="center" width="400"}
+
+
+
+# 3. Modelling
+
+## 
+
+<!-- ![](img/spat2_11.png){fig-align="center" width="400"} -->
+
+## 
+
+<!-- ![](img/spat2_12.png){fig-align="center" width="400"} -->
 
 
 
@@ -48,9 +81,7 @@ format:
 
 ## 
 
-## Bibliografy
 
-*Corander, J. & Villani, M. (2006), ‘A Bayesian Approach to Modelling Graphical Vector Autoregressions’, Journal of Time Series Analysis 27(1), 141–156.*
 
 
 ##

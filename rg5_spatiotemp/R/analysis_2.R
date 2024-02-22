@@ -284,6 +284,13 @@ data_month |>
 	labs(title = "PM10 - by station", x = "", y = "")
 
 
+# * Distribution ----------------------------------------------------------
+data_month |> 
+	ggplot(aes(x = pm10)) + 
+	geom_histogram(binwidth = 2) + 
+	labs(title = "PM10 Distribution", x = "PM10", y = "Frequency")
+
+
 
 # Modelling ---------------------------------------------------------------
 
@@ -341,7 +348,6 @@ plot(variog, variog_prodsum, map = FALSE)
 plot(variog, variog_prodsum,map = TRUE)
 vgm_prodsum <- fit.StVariogram(variog, variog_prodsum)
 
-## ERROR in binding !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 sqrt(attr(vgm_sep, "MSE"));	sqrt(attr(vgm_prodsum, "MSE"))
 extractPar(vgm_sep); extractPar(vgm_prodsum)
 
