@@ -17,7 +17,7 @@ format:
 
 1. Introduction
 
-2. Methods
+2. Variogram Methods
 
 3. Simulation & Results
 
@@ -27,33 +27,70 @@ format:
 
 # 1. Introduction
 
+
 ## Geostatistics
+
+Spatial data are observations measured at known locations, based on the notion 
+that near things are more related than distant things.  
+
+The types of spatial data are areal data, point pattern, and geostatistical data.  
+    
+A Geostatistical model may be represented in the form
+$$Y(x)=\mu(x)+S(x)+W(x), \hspace{4mm} x \in D$$
+where $\mu(x)=$ trend (large scale component), $S(x)=$ 0-mean spatial stochastic 
+process (small scale term), $W(x)=$ 0-mean n independent random variables with 
+$Var(W(x))=\tau^2$ (white noise) and $D$ space index.
 
 
 ## Gaussian Random Field
 
+An infinite indexed family of random variables defined on a common probabilistic 
+space. “Spatial” is deployed when the trajectory of the process is a deterministic 
+function with 2-D or 3-D domain.  
+
+Three main ingredients: a index space, a probability space and a state space.  
+
+A stochastic process is Gaussian when follows a k-dimensional (multivariate) 
+Normal distribution.  
+
+Main advantage:  
+
+- strong stationarity and second-order stationarity coincide (the invariance of 
+the distributional features of the process).
 
 
-# 2. Methods
+
+# 2. Variogram Methods
+
+## 
+
+The variogram function $2\gamma(\cdot)$ (treated as a parameter of a stochastic 
+process) verifies spatial dependence in geostatistics. It is defined as
+$$2\gamma(s_1-s_2)\equiv var(Z(s_1)-Z(s_2))$$
+  
+$2\gamma(\cdot)$ is a function only of the increment $s_1 - s_2=h$ and it will 
+be treated as a parameter of a stochastic process, restricted to be symmetric 
+about 0 and conditionally-negative definite.  
+
+Three basic models in terms of semivariogram ($\gamma(\cdot)$):  
+
+- linear: $\gamma(h;\theta)=c_0+b_l||h||$  
+- spherical: $\gamma(h;\theta)=c_0+c_s\{(3/2)(||h||/a_{s})-1/2(||h||/a_{s})^3$  
+- exponential: $c_0+c_e\{1-exp(-||h||/a_{e})\}$
+
 
 ##
 
-The **classical variogram** estimator based on Matheron (1962) is defined as:
+The **classical variogram** estimator is based on Matheron (1962)
 $$2\hat{\gamma}=\frac{1}{|N(h)|}\sum_{N(h)}\left(Z(s_i)-Z(s_j)\right)^2, \hspace{2mm} h\in \mathbb{R}^d$$  
 
 where $N(h)=\{(s_i,s_j):s_i-s_j=h; i,j=1,...,n\}$ and $|N(h)|$ is the number of 
 distinct pairs in $N(h)$.  
 
-##
-
-The **robust variogram** estimator based on Cressie (1980) is defined as:
+The **robust variogram** estimator is based on Cressie (1980)
 $$2\bar{\gamma}(h)\equiv\left\{\frac{1}{|N(h)|}\sum_{N(h}|Z(s_i)-Z(s_j)|^{1/2}\right\}^4/(0.457+0.494/|N(h)|)$$  
 
-and
-$$2\tilde{\gamma}(h)=[med\{|Z(s_i)-Z(s_j)|^{1/2}:(s_i,s_j) \in N(h)\}]^4/B(h)$$  
-
-where $med\{\cdot\}$ is the median of the sequence and $B(h)$ corrects for bias 
-(asymptotically 0.457).
+where a bias correction is used (asymptotically 0.457).  
 
 
 
@@ -61,9 +98,11 @@ where $med\{\cdot\}$ is the median of the sequence and $B(h)$ corrects for bias
 
 ## 
 
-Following Hawkins (1984), the departure from Gaussianity is obtained simulating 
-a **GRF** with probability $1 - \epsilon$ and a **CGRF** with probability $\epsilon$.  
+Following Hawkins (1984), the departure from Gaussianity is obtained simulating  
+$$Z(s)=\mu+W(s)+E(s)$$ and $E(s)$ is a Gaussian process with probability 
+$1 - \epsilon$ and a Contaminated Gaussian process with probability $\epsilon$.  
 $$
+E(s) \sim
 \begin{cases}
   Gau(0, c_o), \;\;\;\;\;\;\; with \; probability \; 1-\epsilon \\
   Gau(0, k^2 c_0), \;\;\;\; with \; probability \; \epsilon
@@ -73,8 +112,8 @@ $$
 where $\epsilon$ is the probability of contamination and $k$ measures the scale 
 of the contamination.  
 
-To practically simulate the underlying GRF, the **grf** function of the **geoR** 
-package in R is used.  
+To practically simulate the underlying process, the **grf** function of the 
+**geoR** package in R is used.  
 
 
 ## 
