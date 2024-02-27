@@ -118,7 +118,6 @@ data_month |>
 	plot_stl_diagnostics(
 		.date_var = date, .value = pm10, 
 		.interactive = FALSE,
-		.feature_set = c("observed", "season", "trend", "remainder"),
 		.title = "PM10 Decomposition - by month"
 	)
 
@@ -242,6 +241,14 @@ data_month |>
 		.title = "PM10 Anomalies"
 	)
 
+
+# ** Stationarity ---------------------------------------------------------
+data_month |> 
+	group_by(date) |> 
+	summarise(pm10 = mean(pm10)) |> 
+	pull(pm10) |> 
+	tseries::adf.test()
+
 # ** Regression -----------------------------------------------------------
 data_month |> 
 	group_by(date) |> 
@@ -251,7 +258,6 @@ data_month |>
 		.interactive = FALSE, .show_summary = TRUE,
 		.title = "PM10 Regression"
 	)
-
 
 
 # * Space Plots -----------------------------------------------------------
@@ -287,8 +293,9 @@ data_month |>
 # * Distribution ----------------------------------------------------------
 data_month |> 
 	ggplot(aes(x = pm10)) + 
-	geom_histogram(binwidth = 2) + 
-	labs(title = "PM10 Distribution", x = "PM10", y = "Frequency")
+	geom_histogram(binwidth = 2, fill = "lightblue") + 
+	labs(title = "PM10 Distribution", x = "PM10", y = "Frequency") + 
+	timetk:::theme_tq()
 
 
 
@@ -329,8 +336,8 @@ plot(variog, wireframe = TRUE)
 # separable variogram
 variog_sep <- vgmST(
 	stModel = "separable",
-	space = vgm(psill = 25, "Exp", range = 150, nugget = 10),
-	time = vgm(psill = 10, "Exp", range = 100, nugget = 0.50),
+	space = vgm(psill = 20, "Exp", range = 100, nugget = 10),
+	time = vgm(psill = 12, "Exp", range = 100, nugget = 10),
 	sill = 20
 )
 plot(variog, variog_sep, map = FALSE)
@@ -340,8 +347,8 @@ vgm_sep <- fit.StVariogram(variog, variog_sep)
 # product-sum variogram
 variog_prodsum <- vgmST(
 	stModel = "productSum",
-	space = vgm(psill = 25, "Exp", range = 150, nugget = 10),
-	time = vgm(psill = 10, "Exp", range = 100, nugget = 0.50),
+	space = vgm(psill = 20, "Exp", range = 100, nugget = 10),
+	time = vgm(psill = 12, "Exp", range = 100, nugget = 10),
 	k = 2
 )
 plot(variog, variog_prodsum, map = FALSE)
@@ -355,20 +362,20 @@ extractPar(vgm_sep); extractPar(vgm_prodsum)
 
 # * Spatio-Temporal Validation --------------------------------------------
 
-
 # ** Train - Test Split ---------------------------------------------------
 tr <- data_panel |> dplyr::filter(date < "2019-10-01") # train
 te <- data_panel |> dplyr::filter(date >= "2019-10-01") # test
 
 # ** Validation Split -----------------------------------------------------
+set.seed(1992)
 k_space <- trunc(tr$code |> unique() |> length() * (1/3))
 k_time <- trunc(tr$date |> unique() |> length() * (1/3))
 k_spacetime <- min(k_space, k_time)
-idx_llo <- CreateSpacetimeFolds(tr, spacevar = "code", k = k_spatial) # Leave-Location-Out CV (LLOCV)
+idx_llo <- CreateSpacetimeFolds(tr, spacevar = "code", k = k_space) # Leave-Location-Out CV (LLOCV)
 idx_lto <- CreateSpacetimeFolds(tr, timevar = "date", k = k_time) # Leave-Time-Out CV (LLOCV)
 idx_llto <- CreateSpacetimeFolds(tr, spacevar = "code", timevar = "date", k = k_spacetime) # Leave-Location-Time-Out CV (LLTOCV)
 # tr[idx_llo$indexOut[[1]], ] |> View()
-# tr[idx_lto$indexOut[[1]], ] |> View()
+# tr[idx_lto$indexOut[[2]], ] |> View()
 # tr[idx_llto$indexOut[[1]], ] |> View()
 
 
@@ -423,25 +430,60 @@ variog_validation <- function(variog_model, train_set, valid_index) {
 	
 }
 
+# separable model
+variog_sep <- vgmST(
+	stModel = "separable",
+	space = vgm(psill = 20, "Exp", range = 100, nugget = 10),
+	time = vgm(psill = 12, "Exp", range = 100, nugget = 10),
+	sill = 20
+)
+
+res_llo_sep <- variog_validation(variog_sep, tr, idx_llo)
+res_lto_sep <- variog_validation(variog_sep, tr, idx_lto)
+res_llto_sep <- variog_validation(variog_sep, tr, idx_lto)
+
+RMSE_models_sep <- rbind(
+	data.frame(CV = "LLO", RMSE = res_llo_sep, Model = "separable"),
+	data.frame(CV = "LTO", RMSE = res_lto_sep, Model = "separable"),
+	data.frame(CV = "LLTO", RMSE = res_llto_sep, Model = "separable")
+)
+
+# product-sum model
 variog_prodsum <- vgmST(
 	stModel = "productSum",
-	space = vgm(psill = 25, "Exp", range = 150, nugget = 10),
-	time = vgm(psill = 10, "Exp", range = 100, nugget = 0.50),
+	space = vgm(psill = 20, "Exp", range = 100, nugget = 10),
+	time = vgm(psill = 12, "Exp", range = 100, nugget = 10),
 	k = 2
 )
 
-res_llo <- variog_validation(variog_prodsum, tr, idx_llo)
-res_lto <- variog_validation(variog_prodsum, tr, idx_lto)
-res_llto <- variog_validation(variog_prodsum, tr, idx_lto)
+res_llo_prod <- variog_validation(variog_prodsum, tr, idx_llo)
+res_lto_prod <- variog_validation(variog_prodsum, tr, idx_lto)
+res_llto_prod <- variog_validation(variog_prodsum, tr, idx_lto)
 
-RMSE_models <- rbind(
-	data.frame(Model = "LLO", RMSE = res_llo),
-	data.frame(Model = "LTO", RMSE = res_lto),
-	data.frame(Model = "LLTO", RMSE = res_llto)
+RMSE_models_prod <- rbind(
+	data.frame(CV = "LLO", RMSE = res_llo_prod, Model = "product-sum"),
+	data.frame(CV = "LTO", RMSE = res_lto_prod, Model = "product-sum"),
+	data.frame(CV = "LLTO", RMSE = res_llto_prod, Model = "product-sum")
 )
 
-RMSE_models |>
-	ggplot() + 
-	geom_boxplot(mapping = aes(y = RMSE, fill = Model)) + 
-	labs(title = "RMSE by CV strategy")
 
+RMSE_models <- bind_rows(RMSE_models_sep, RMSE_models_prod)
+
+RMSE_models |>
+	ggplot(aes(y = RMSE, fill = Model)) + 
+	geom_boxplot() + 
+	labs(title = "RMSE by Model") + 
+	timetk:::theme_tq()
+
+RMSE_models |>
+	ggplot(aes(y = RMSE, fill = CV)) + 
+	geom_boxplot() + 
+	labs(title = "RMSE by CV strategy") + 
+	timetk:::theme_tq()
+
+RMSE_models |>
+	ggplot(aes(y = RMSE, fill = CV)) + 
+	geom_boxplot() + 
+	facet_wrap(~ Model) + 
+	labs(title = "RMSE by CV strategy") + 
+	timetk:::theme_tq()

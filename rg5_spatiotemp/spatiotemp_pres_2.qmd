@@ -31,6 +31,10 @@ format:
 
 ![](img/spat2_1.png){fig-align="center" width="400"}
 
+##
+
+![](img/spat2_11.png){fig-align="center" width="400"}
+
 
 
 # 2. Explorative Analysis
@@ -69,11 +73,22 @@ format:
 
 ## 
 
-<!-- ![](img/spat2_11.png){fig-align="center" width="400"} -->
+We used spatio-temporal models to predict PM10 concentration in Nordrhein-Westfalen.  
+
+Two methods:  
+
+- separable spatio-temporal model  
+- product-sum spatio-temporal model  
+
+Three cross-validation strategies:  
+
+- Leave-Location-Out CV  
+- Leave-Time-Out CV  
+- Leave-Location-Time-Out CV  
 
 ## 
 
-<!-- ![](img/spat2_12.png){fig-align="center" width="400"} -->
+![](img/spat2_12.png){fig-align="center" width="400"}
 
 
 
@@ -81,8 +96,12 @@ format:
 
 ## 
 
+- There is no significance difference between the two models in predicting PM10 
+concentration  
 
+- Temporal validation strategies seems to be more effective  
 
+- No covariates were included in the models  
 
 ##
 
