@@ -244,6 +244,7 @@ for (q in quant) {
 			results |> 
 				dplyr::filter(tau == q) |> 
 				extract_model_table(.term = t, .parameter = p, .digits = 3) |> 
+				set_names(c("Method", "0%", "10%", "20%")) |> 
 				dt_table(title = tit) |> 
 				print()
 		}
