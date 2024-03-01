@@ -7,6 +7,7 @@ install.packages("mice")
 install.packages("quantreg")
 install.packages("DT")
 install.packages("naniar")
+install.packages("patchwork")
 
 library(tidyverse)
 library(broom)
@@ -14,6 +15,7 @@ library(mice)
 library(quantreg)
 library(DT)
 library(naniar)
+library(patchwork)
 
 
 
@@ -121,13 +123,24 @@ tidy_rq <- function(summary_rq) {
 }
 
 # function to extract results
-extract_model_table <- function(data, .term, .parameter, .digits = 4) {
+extract_model_table <- function(data, .parameter, .digits = 4) {
 	res_tbl <- data |> 
-		dplyr::filter(term == .term) |> 
 		dplyr::select(dplyr::all_of(c(.parameter, "method", "p_miss"))) |>
 		dplyr::mutate(p_miss = paste0("p_miss = ", p_miss)) |> 
-		pivot_wider(names_from = "p_miss", values_from = all_of(.parameter)) |> 
+		tidyr::pivot_wider(names_from = "p_miss", values_from = dplyr::all_of(.parameter)) |> 
 		dplyr::mutate(dplyr::across(where(is.numeric), ~ round(., digits = .digits)))
+	return(res_tbl)
+}
+
+extract_model_table2 <- function(data, .digits = 4) {
+	res_tbl <- data |> 
+		dplyr::select(dplyr::all_of(c("estimate", "std.error", "method", "p_miss"))) |>
+		dplyr::mutate(
+			value = paste0(round(estimate, digits = .digits), " (", round(std.error, digits = .digits), ")"),
+			p_miss = paste0("p_miss = ", p_miss)
+		) |> 
+		dplyr::select(-estimate, -std.error) |> 
+		tidyr::pivot_wider(names_from = "p_miss", values_from = "value")
 	return(res_tbl)
 }
 
@@ -171,11 +184,11 @@ dt_table <- function(data, title = "", caption = "", rownames = FALSE) {
 
 # * Simulate Data ---------------------------------------------------------
 # simulation parameters
-n_sim <- 300
-min_vector <- c(0, 0)
-max_vector <- c(1, 1)
+n_sim <- 500
+min_vector <- c(3, -1)
+max_vector <- c(8, 5)
 intercept <- 0
-beta_vector <- c(2, 2)
+beta_vector <- c(3, -0.5)
 
 data_sim <- simulate_data(n_sim, min_vector, max_vector, intercept, beta_vector)
 
@@ -186,6 +199,7 @@ p_miss <- c(0.1, 0.2)
 data_miss <- purrr::map(p_miss, ~ simulate_missing(data_sim, .x, seed = 7))
 
 purrr::walk(data_miss, ~ print(vis_miss(.x)))	
+vis_miss(data_miss[[1]]) + vis_miss(data_miss[[2]]) 
 purrr::walk(
 	data_miss, 
 	~ print(ggplot(data = .x, aes(x = z,	y = y)) + geom_miss_point())
@@ -198,19 +212,29 @@ purrr::walk(
 imp_method <- c("remove", "sample", "mean", "median")
 
 data_imputed <- impute_multiple_data(data_miss, imp_method)
-
+# l'ordine è 4 metodi per p 0.1 e 4 metodi per p 0.2
 
 
 # Modelling ---------------------------------------------------------------
 
 # modelling parameters
-taus <- c(0.5) # seq(0.1, 0.9, by = 0.1)
+taus <- c(0.25, 0.5, 0.75) # seq(0.1, 0.9, by = 0.1)
+se_type <- c("Kernel", "Bootstrap")
+param_grid <- rbind(
+	expand.grid("complete", 0, se_type),	
+	expand.grid(imp_method, p_miss, se_type)
+) |> 
+	set_names(c("method", "p_miss", "std_error"))
+param_grid |> dt_table()
+
 model_grid <- rbind(expand.grid("complete", 0),	expand.grid(imp_method, p_miss)) |> 
 	set_names(c("method", "p_miss"))
 model_grid
 data_model <- c(list(data_sim), data_imputed)
 
-res_ker <- purrr::map(data_model, ~ fit_rq(.x, taus)) |> 
+model_fit <- purrr::map(data_model, ~ fit_rq(.x, taus))
+
+res <- model_fit |> 
 	purrr::map(summary_rq, se = "ker") |> 
 	purrr::map(tidy_rq) |> 
 	purrr::map(bind_rows) |> 
@@ -218,20 +242,10 @@ res_ker <- purrr::map(data_model, ~ fit_rq(.x, taus)) |>
 	purrr::map2(model_grid$method, ~ mutate(.x, "method" = .y)) |>
 	bind_rows()
 
-res_boot <- purrr::map(data_model, ~ fit_rq(.x, taus)) |> 
-	purrr::map(summary_rq, se = "boot", R = 200) |> 
-	purrr::map(tidy_rq) |> 
-	purrr::map(bind_rows) |> 
-	purrr::map2(model_grid$p_miss, ~ mutate(.x, "p_miss" = .y)) |>
-	purrr::map2(model_grid$method, ~ mutate(.x, "method" = .y)) |> 
-	bind_rows()
-
-
 # create table of results
 quant <- taus
 terms <- c("x", "z")
 params <- c("estimate", "std.error")
-results <- res_ker # cambiare con res_boot
 
 for (q in quant) {
 	for (t in terms) {
@@ -241,13 +255,30 @@ for (q in quant) {
 				ifelse(p == "estimate", "Beta", "Std.Error"), 
 				", Quantile = ", q
 			)
-			results |> 
+			res |> 
 				dplyr::filter(tau == q) |> 
-				extract_model_table(.term = t, .parameter = p, .digits = 3) |> 
+				dplyr::filter(term == t) |> 
+				extract_model_table(.parameter = p, .digits = 3) |> 
 				set_names(c("Method", "0%", "10%", "20%")) |> 
 				dt_table(title = tit) |> 
 				print()
 		}
+	}
+}
+
+quant <- taus
+terms <- c("x", "z")
+
+for (q in quant) {
+	for (t in terms) {
+		tit <- paste0("Variable: ", toupper(t), ", Quantile = ", q)
+		res |> 
+			dplyr::filter(tau == q) |> 
+			dplyr::filter(term == t) |> 
+			extract_model_table2(.digits = 3) |> 
+			set_names(c("Method", "0%", "10%", "20%")) |> 
+			dt_table(title = tit) |> 
+			print()
 	}
 }
 
