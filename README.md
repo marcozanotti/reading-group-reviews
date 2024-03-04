@@ -18,7 +18,10 @@ The presentations for the five Reading Group courses.
 
 ## RG 4 - Issue of Statistical Modeling
 
-[Presentation](https://marcozanotti.github.io/reading-group-reviews/rg4_issueofstat/issueofstat_pres.pdf)
+[Review](https://marcozanotti.github.io/reading-group-reviews/rg4_issueofstat/issueofstat_review.pdf)  
+[Presentation](https://marcozanotti.github.io/reading-group-reviews/rg4_issueofstat/issueofstat_pres.pdf)  
+[R
+Code](https://marcozanotti.github.io/reading-group-reviews/rg4_issueofstat/R/simulation.R)
 
 ## RG 5 - Spatio-Temporal Methods
 

@@ -1,0 +1,69 @@
+---
+title: "Quantile Regression with Univariate Non-response"
+author: "Valentina Zangirolami, Marco Zanotti, Muhammad Amir Saeed"
+institute: "University Milano-Bicocca"
+format: 
+ beamer:
+  theme: Dresden
+  colortheme: default
+  navigation: horizontal
+  header-includes: |
+       \titlegraphic{\includegraphics[width=0.2\paperwidth]{img/logo-giallo.png}}
+       \setbeamertemplate{page number in head/foot}[totalframenumber]
+---
+
+
+## Contents
+
+1. Missing Value Theory
+
+2. Quantile Regression
+
+3. Simulation & Results
+
+4. Conclusions
+
+
+
+# 1. Missing Value Theory
+
+## 
+
+
+
+# 2. Quantile Regression
+
+## 
+
+
+
+# 3. Simulation & Results
+
+## 
+
+<!-- ![](img/grf.png){fig-align="center" width="200"} -->
+
+
+##
+
+
+
+# 4. Conclusions
+
+## 
+
+
+
+
+## Bibliografy
+
+*Cressie, N. & Hawkins, D. M. 1980, Robust estimation of the variogram: I, Journal of
+the international Association for Mathematical Geology 12, 115-125*
+
+
+##
+
+\center Thank you! \center
+
+\
+
