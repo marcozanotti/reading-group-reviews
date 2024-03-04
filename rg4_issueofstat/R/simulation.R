@@ -134,12 +134,15 @@ extract_model_table <- function(data, .parameter, .digits = 4) {
 
 extract_model_table2 <- function(data, .digits = 4) {
 	res_tbl <- data |> 
-		dplyr::select(dplyr::all_of(c("estimate", "std.error", "method", "p_miss"))) |>
+		dplyr::select(dplyr::all_of(c("estimate", "std.error", "method", "p_miss", "coverage"))) |>
 		dplyr::mutate(
-			value = paste0(round(estimate, digits = .digits), " (", round(std.error, digits = .digits), ")"),
+			value = paste0(
+				round(estimate, digits = .digits), " (", 
+				round(std.error, digits = .digits), " - ", 
+				round(coverage, digits = .digits), ")"),
 			p_miss = paste0("p_miss = ", p_miss)
 		) |> 
-		dplyr::select(-estimate, -std.error) |> 
+		dplyr::select(-estimate, -std.error, -coverage) |> 
 		tidyr::pivot_wider(names_from = "p_miss", values_from = "value")
 	return(res_tbl)
 }
@@ -178,6 +181,80 @@ dt_table <- function(data, title = "", caption = "", rownames = FALSE) {
 	
 }
 
+# function to compute coverage
+compute_coverage <- function(y, lower, upper) {
+	coverage <- sum(y >= lower & y <= upper) / length(y)
+	return(coverage)
+}
+
+# function to perform bootstrap imputing procedure
+boostrap_missing_rq <- function(
+		data, .p_miss, .impute_method, .taus, .n_boot, .ci_quantile = 0.975, verbose = TRUE
+) {
+	
+	if (verbose) 
+		cat(paste0(
+			"Estimating Quantile Regression for: p_miss = ", .p_miss, 
+			", impute_method = ", .impute_method, "\n"
+		))
+	data_miss <- simulate_missing(data, .p_miss, seed = 7)
+	n <- nrow(data_miss)
+	boot_coverage <- vector("numeric", .n_boot)
+	boot_estimates <- vector("list", .n_boot)
+	
+	for (b in seq_len(.n_boot)) {
+		
+		if (verbose) cat(paste0("Bottstrap iteration: ", b, "\n"))
+		idx_tmp <- sample(1:n, size = n, replace = TRUE) # boot id
+		boot_data <- data_miss[idx_tmp, ] # boot sample
+		boot_imputed <- impute_data(boot_data, .impute_method) # imputation
+		boot_fit <- fit_rq(boot_imputed, .taus) # quantile regression fitting
+		boot_pred <- predict(boot_fit) # compute predictions for each quantile
+		boot_coverage[b] <- compute_coverage(
+			y = boot_data$y, 
+			lower = boot_pred[, 1], # lower quantile
+			upper = boot_pred[, ncol(boot_pred)] # upper quantile
+		)
+		boot_estimates[[b]] <- boot_fit |> # extract summary of estimates
+			summary_rq(se = "ker") |> 
+			tidy_rq() |> 
+			dplyr::bind_rows() |> 
+			dplyr::mutate("boot" = b, .before = 1)
+		
+	}
+	
+	ci_q <- qnorm(.ci_quantile)
+	boot_estimates <- boot_estimates |> dplyr::bind_rows()
+	boot_estimates_aggr <- boot_estimates |> 
+		dplyr::group_by(term, tau) |>
+		dplyr::summarise("mean" = mean(estimate), "std.error" = sd(estimate), .groups = "drop") |> 
+		dplyr::rename("estimate" = "mean") |> 
+		dplyr::mutate("lower_95" =  estimate - ci_q * std.error, "upper_95" = estimate + ci_q * std.error) |>
+		dplyr::mutate("method" = .impute_method, "p_miss" = .p_miss, .before = 1)
+	
+	boot_ci <- boot_estimates_aggr |> dplyr::select(term, tau, lower_95, upper_95)
+	boot_beta_coverage <- vector("numeric", nrow(boot_ci))
+	for (i in 1:nrow(boot_ci)) {
+		term_tmp <- boot_ci$term[i]
+		tau_tmp <- boot_ci$tau[i]
+		lower_tmp <- boot_ci$lower_95[i]
+		upper_tmp <- boot_ci$upper_95[i]
+		betas_tmp <- boot_estimates |> 
+			dplyr::filter(term == term_tmp, tau == tau_tmp) |> 
+			dplyr::pull("estimate")
+		boot_beta_coverage[i] <- compute_coverage(y = betas_tmp,	lower = lower_tmp, upper = upper_tmp)
+	}
+	boot_estimates_aggr <- boot_estimates_aggr |> 
+		dplyr::mutate("coverage" = boot_beta_coverage)
+	boot_coverage <- tibble::tibble(
+		"method" = .impute_method, "p_miss" = .p_miss, "coverage" = mean(boot_coverage)
+	)
+	
+	res <- list("estimates" = boot_estimates_aggr, "coverage" = boot_coverage)
+	return(res)
+	
+}
+
 
 
 # Simulation --------------------------------------------------------------
@@ -194,7 +271,7 @@ data_sim <- simulate_data(n_sim, min_vector, max_vector, intercept, beta_vector)
 
 # * Simulate Missing Data ------------------------------------------------
 # missing values parameters
-p_miss <- c(0.1, 0.2)
+p_miss <- c(0.1, 0.4)
 
 data_miss <- purrr::map(p_miss, ~ simulate_missing(data_sim, .x, seed = 7))
 
@@ -215,16 +292,13 @@ data_imputed <- impute_multiple_data(data_miss, imp_method)
 # l'ordine è 4 metodi per p 0.1 e 4 metodi per p 0.2
 
 
+
 # Modelling ---------------------------------------------------------------
 
 # modelling parameters
-taus <- c(0.25, 0.5, 0.75) # seq(0.1, 0.9, by = 0.1)
-se_type <- c("Kernel", "Bootstrap")
-param_grid <- rbind(
-	expand.grid("complete", 0, se_type),	
-	expand.grid(imp_method, p_miss, se_type)
-) |> 
-	set_names(c("method", "p_miss", "std_error"))
+taus <- c(0.25, 0.5, 0.75)
+param_grid <- rbind(expand.grid("complete", 0),	expand.grid(imp_method, p_miss)) |> 
+	set_names(c("method", "p_miss"))
 param_grid |> dt_table()
 
 model_grid <- rbind(expand.grid("complete", 0),	expand.grid(imp_method, p_miss)) |> 
@@ -259,7 +333,7 @@ for (q in quant) {
 				dplyr::filter(tau == q) |> 
 				dplyr::filter(term == t) |> 
 				extract_model_table(.parameter = p, .digits = 3) |> 
-				set_names(c("Method", "0%", "10%", "20%")) |> 
+				set_names(c("Method", "0%", "10%", "40%")) |> 
 				dt_table(title = tit) |> 
 				print()
 		}
@@ -276,9 +350,71 @@ for (q in quant) {
 			dplyr::filter(tau == q) |> 
 			dplyr::filter(term == t) |> 
 			extract_model_table2(.digits = 3) |> 
-			set_names(c("Method", "0%", "10%", "20%")) |> 
+			set_names(c("Method", "0%", "10%", "40%")) |> 
 			dt_table(title = tit) |> 
 			print()
 	}
 }
+
+
+
+# Bootstrapping -----------------------------------------------------------
+
+# parameters
+data_sim
+p_miss <- c(0.1, 0.4)
+imp_method <- c("sample", "mean", "median")
+param_grid <- expand.grid(imp_method, p_miss) |> 
+	set_names(c("method", "p_miss")) |> 
+	mutate(method = as.character(method))
+param_grid |> dt_table()
+taus <- c(0.25, 0.5, 0.75)
+n_boot <- 200
+
+# testing
+boostrap_missing_rq(
+	data = data_sim, 
+	.p_miss = 0.1, 
+	.impute_method = "sample", 
+	.taus = c(0.25, 0.5, 0.75), 
+	.n_boot = 10,
+	.ci_quantile = 0.975
+)
+
+# estimation
+res <- purrr::map2(
+	param_grid$method, param_grid$p_miss,
+	~ boostrap_missing_rq(
+		data = data_sim, 
+		.p_miss = .y, 
+		.impute_method = .x, 
+		.taus = taus, 
+		.n_boot = n_boot,
+		.ci_quantile = 0.975,
+		verbose = TRUE
+	)
+)
+boot_est <- purrr::map(res, "estimates") |> dplyr::bind_rows()
+boot_cov <- purrr::map(res, "coverage") |> dplyr::bind_rows()
+
+quant <- taus
+terms <- c("x", "z")
+for (q in quant) {
+	for (t in terms) {
+		tit <- paste0("Variable: ", toupper(t), ", Quantile = ", q)
+		boot_est |> 
+			dplyr::filter(tau == q) |> 
+			dplyr::filter(term == t) |> 
+			extract_model_table2(.digits = 3) |> 
+			set_names(c("Method", "10%", "40%")) |> 
+			dt_table(title = tit) |> 
+			print()
+	}
+}
+
+boot_cov |> 
+	pivot_wider(names_from = "p_miss", values_from = "coverage") |> 
+	mutate(across(where(is.numeric), ~ round(.x, digits = 3))) |> 
+	set_names(c("Method", "10%", "40%")) |> 
+	dt_table(title = "Coverage")
 
