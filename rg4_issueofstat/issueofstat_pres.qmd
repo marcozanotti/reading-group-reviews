@@ -15,19 +15,40 @@ format:
 
 ## Contents
 
-1. Missing Value Theory
+1. Missing Data Problem
 
 2. Quantile Regression
 
-3. Simulation & Results
+3. Bootstrap Estimation
 
-4. Conclusions
+4. Simulation & Results
+
+5. Conclusions
 
 
 
-# 1. Missing Value Theory
+# 1. Missing Data Problem
 
 ## 
+
+We considered univariate non-response case where missing values are generated 
+by a MCAR mechanism.  
+
+Let $D$ be the data matrix with dimension $n \times k$. $D$ is composed by 
+observed and missing values, i.e. $D=(D_{obs}, D_{miss})$.  
+
+The missing-data indicator can be defined such that
+$$
+M = 
+\begin{cases}
+    1,& \mbox{missing values}\\
+    0, & \mbox{otherwise}
+\end{cases}
+$$
+the MCAR statement guarantees $p(M|D, \phi) = p(M|\phi)$, $\forall D, \phi$.  
+
+We considered two kind of strategies for non-response data: listwise deletion 
+and single imputation methods. 
 
 
 
@@ -35,31 +56,114 @@ format:
 
 ## 
 
+We considered the following model
+$$Y_i = \beta_{0} + \beta_{1} x_i + \beta_{2} z_i + \epsilon_{i}$$
+The coefficients $\beta = (\beta_{0},\beta_{1},\beta_{2})$ can be estimated by 
+minimizing
+$$\sum_{i=1}^n \rho_{\tau} (Y - (\beta_{0} + \beta_{1} x_i + \beta_{2} z_i))$$
+where $\tau \in (0,1)$ and $\rho_{\tau} (u) = (\tau - I(u <0))u$. 
+
+The estimated model corresponds to 
+$$\hat{Q}_{\tau}(Y|x,z;\hat{\beta})= \hat{\beta}_{0, \tau} + \hat{\beta}_{1, \tau} x + \hat{\beta}_{2, \tau} z$$ 
 
 
-# 3. Simulation & Results
 
-## 
-
-<!-- ![](img/grf.png){fig-align="center" width="200"} -->
-
+# 3. Bootstrap Estimation
 
 ##
 
+Considering $B$ bootstrap sample $D^*$ from $D$ (i.e. the incomplete dataset), 
+each value of $D^*_{miss}$ should be replaced by a single value following the 
+chosen imputation method.  
+
+The bootstrap estimators are
+$$\hat{\beta}^*_{\tau} = \frac{1}{B} \sum_{b=1}^B \hat{\beta}^*_{\tau; b}$$
+$$
+se^*(\hat{\beta}^*_{\tau}) =\sqrt{\frac{1}{B-1} \sum_{b=1}^B (\hat{\beta}^*_{\tau; b} - \hat{\beta}^*_{\tau})(\hat{\beta}^*_{\tau; b} - \hat{\beta}^*_{\tau})^T}
+$$
+Moreover, the coverage for $\beta_{\tau}$ corresponds to
+$$
+p(\hat{\beta}^*_{\tau} - z_{\alpha/2} se^*(\hat{\beta}^*_{\tau}) < \beta_{\tau} < \hat{\beta}^*_{\tau} + z_{\alpha/2} se^*(\hat{\beta}^*_{\tau}))
+$$
 
 
-# 4. Conclusions
+
+# 4. Simulation & Results
 
 ## 
 
+In this simulation, we assumed:  
+
+- a sample size $n=500$  
+
+- $p=2$ covariates $(X,Z)$ with $X=(x_1, \ldots, x_n) \sim U(3, 8)$ and 
+$Z=(z_1, \ldots, z_n) \sim U(-1, 5)$  
+
+- gaussian errors $\epsilon \sim N(0,1)$, such that 
+
+$$y^{(j)}_i = 3 x_i -0.5 z^{(j)}_i + \epsilon_i \quad \forall i=1, \ldots, n$$
+
+##
+
+$Z$ is the variable containing missing values, with two scenarios
+
+![](img/img1.png){fig-align="center" width="350"}
+
+Both scenarios satisfy the MCAR assumption.   
+
+## 
+
+We compared several methods for handling missing data:  
+
+- complete-case analysis    
+- random imputation
+- mean imputation  
+- median imputation  
+
+We estimated the quantile regression model considering the quantiles of order
+0.25, 0.5 and 0.75.  
+
+We assessed the imputation methods using the original simulated dataset and 
+bootstrap samples.  
+
+##
+
+![](img/img2.png){fig-align="center" width="400"}
+
+##
+
+![](img/img3.png){fig-align="center" width="400"}
+
+##
+
+![](img/img4.png){fig-align="center" width="400"}
+![](img/img5.png){fig-align="center" width="400"}
+
+
+
+# 5. Conclusions
+
+## 
+
+We investigated the impact of univariate non-response in quantile regression and
+we concluded that:  
+
+- the listwise deletion method yields estimates closely to those obtained with 
+the complete dataset  
+- the other imputation methods provide less accurate estimates   
+- the sample imputation method exhibits really different estimates  
+- the analysis of bootstrap estimators indicates that some standard errors 
+increased due to the additional variability introduced by the imputation method.   
 
 
 
 ## Bibliografy
 
-*Cressie, N. & Hawkins, D. M. 1980, Robust estimation of the variogram: I, Journal of
-the international Association for Mathematical Geology 12, 115-125*
+*Nicolini G., Marasini D., Montanari G.E., Pratesi M., Ranalli M.G., and Rocco E.: Metodi inferenziali in presenza di mancate risposte parziali. In: Metodi di stima in presenza di errori non campionari (2013). UNITEXT. Springer, Milano.*  
 
+*Little J.A., and Rubin D.: Statistical Analysis With Missing Data. 2nd Edition. Wiley Series in Probability and Statistics Book (2002)*
+
+*Koenker, R.: Quantile Regression. Econometric Society Monographs. Cambridge University Press (2005)*
 
 ##
 

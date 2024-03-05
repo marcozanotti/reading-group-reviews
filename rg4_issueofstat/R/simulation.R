@@ -374,10 +374,10 @@ n_boot <- 200
 # testing
 boostrap_missing_rq(
 	data = data_sim, 
-	.p_miss = 0.1, 
-	.impute_method = "sample", 
+	.p_miss = 0.4, 
+	.impute_method = "mean", 
 	.taus = c(0.25, 0.5, 0.75), 
-	.n_boot = 10,
+	.n_boot = 2000,
 	.ci_quantile = 0.975
 )
 
