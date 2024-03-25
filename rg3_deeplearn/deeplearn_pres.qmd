@@ -72,12 +72,10 @@ The main challenges of the TSF problem are:
 :::: {.columns}
 ::: {.column width="60%"}
 - Based on Encoder-Decoder architecture  
-- Uses self-attention mechanism to access any part of the sequence history  
-- Positional encoding allows to account for element positions  
-- Residual connections and layer normalization help to stabilize the learning 
-process  
 - Each encoder and decoder layer is composed of an attention layer and a 
 feed-forward layer  
+- Uses self-attention mechanism to access any part of the sequence history  
+- Positional encoding allows to account for element positions  
 :::
 ::: {.column width="40%"}
 ![](img/vanilla_arch.png){fig-align="center" height="300"}
@@ -171,10 +169,6 @@ used to calculate the attention weights, reaching $O(LlogL)$ complexity.
 
 ![](img/informer_attention.png){fig-align="center"}
 
-In practice, the KL divergence is used to define a sparsity measure, 
-since active queries distribution diverges from uniform, and a random sample of
-$K$ is used to obtain a sparse matrix of keys.    
-
 
 ## Informer - Convolution Layers
 
@@ -188,8 +182,6 @@ $$X_{n+1} = MaxPool( \, ELU( \,Conv1d(Xn) \,) \,)$$
 
 This reduces by half the size of the data between the feature space, improving
 both memory and computational efficiency.  
-
-<!-- ![](img/informer_arch2.png){fig-align="center"} -->
 
 
 ## Autoformer
@@ -233,10 +225,6 @@ frequency-based dependencies from $(Q,K)$. The autocorrelation block measures th
 reduce complexity.
 
 ![](img/autoformer_attention.png){fig-align="center"}
-
-In practice, autocorrelation of the queries and keys for all lags is calculated 
-at once by Fast Fourier Transform, so to achieve $O(LlogL)$ time complexity 
-(similar to Informer).
 
 
 
@@ -299,21 +287,16 @@ series into three systematic components: **trend-cycle**,
 ![](img/ts_decomp.png){fig-align="center" height="180"}
 
 
-## Time2Vec Embedding
+## Attention Mechanism
 
-**Time2Vec** is a method of encoding time information into a vector and has three 
-important properties: 
+![](img/attention_a1.png){fig-align="center" width="400"}
 
-1. **Periodicity**, captures periodic and non-periodic patterns
-2. **Invariant to time rescaling**
-3. **Model-agnostic**, can be combined with many models  
+## Attention Mechanism
 
-For a given scalar time $τ$, $t2v$ of $τ$ is defined as:  
+Machine translation example:  
+*"The animal didn't cross the street because it was too tired"*  
+![](img/attention_a2.png){fig-align="center" height="200"}
 
-$$t2v(\tau)[i] = \begin{cases} \omega_i \tau + \phi_i, & \mbox{if } i = 0 \\ \mathcal{F}(\omega_i \tau + \phi_i), & \mbox{if }1 \leq i \leq k \end{cases}$$
-
-where $\mathcal{F}$ is a periodic activation function, and $\omega_i$ and $\phi_i$ are 
-learnable parameters.  
 
 
 ## Informer - ProbSparse Attention
@@ -329,4 +312,20 @@ $$\tau_1,..., \tau_k = arg \;Top-k \;(\mathcal{R}_{Q,K}(\tau))$$
 $$Attention(Q,K,V) = \sum_{i=1}^{k} Roll(V,\tau_i) \times softmax(\mathcal{R}_{Q,K}(\tau_i))$$
 
 ![](img/autoformer_attention2.png){fig-align="center"}
+
+
+## RNN & LSTM vs Transformers
+
+RNN:  
+
+- process information sequentially  
+- long-term memory loss    
+- vanishing gradients problem  
+- computation issues due to sequential nature  
+
+LSTM:  
+
+- improved the long-term memory loss    
+- solved the vanishing gradients problem  
+- still computational issues due to sequential nature  
 
